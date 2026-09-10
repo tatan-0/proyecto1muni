@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SGR - Municipalidad de La Serena</title>
-    <!-- Enlace al archivo CSS externo -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <!-- HEADER INSTITUCIONAL -->
     <header>
         <div class="header-brand">
             <div>
@@ -27,14 +25,13 @@
                 <option value="pampa">Delegación La Pampa</option>
             </select>
             <div>
-                <strong>María Fonseca Palma</strong>
+                <strong>Sebastian Olave</strong>
                 <span style="display:block; font-size:0.75rem; opacity:0.8;">Territorial OO.CC.</span>
             </div>
         </div>
     </header>
 
     <div class="app-container">
-        <!-- SIDEBAR DE NAVEGACIÓN -->
         <aside>
             <div class="nav-item active" onclick="switchTab('fichaPanel', this)">
                 📋 Ficha Personal y Registro
@@ -50,16 +47,13 @@
             </div>
         </aside>
 
-        <!-- CONTENIDO PRINCIPAL -->
         <main>
-            <!-- 1. FICHA PERSONAL Y REGISTRO DE ACTIVIDADES -->
             <section id="fichaPanel" class="panel active">
                 <div class="panel-header">
                     <h2>Ficha Personal de Gestión e Ingreso de Actividades</h2>
                     <span class="badge badge-rojo">Cumplimiento Actual: 32.3%</span>
                 </div>
 
-                <!-- Tabla de Medición Individual -->
                 <h3 style="font-size: 0.95rem; margin-bottom: 10px;">Metas e Indicadores Trimestrales (Cumplimiento Mínimo 80%)</h3>
                 <table>
                     <thead>
@@ -134,7 +128,6 @@
 
                 <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border-color);">
 
-                <!-- Formulario de Registro Diario -->
                 <h3 style="font-size: 1rem; margin-bottom: 15px; color: var(--primary);">Formulario de Registro Diario de Actividad</h3>
                 <form id="actividadForm" onsubmit="registrarActividad(event)">
                     <div class="form-grid">
@@ -183,7 +176,6 @@
                     <button type="submit" class="btn">Guardar Registro y Generar Código</button>
                 </form>
 
-                <!-- Historial de Registros -->
                 <h3 style="font-size: 0.95rem; margin: 20px 0 10px 0;">Historial de Ingresos Diarios</h3>
                 <table id="tablaHistorial">
                     <thead>
@@ -223,7 +215,6 @@
                 </table>
             </section>
 
-            <!-- 2. TUBO DE TRABAJO (AGENDA COLECTIVA) -->
             <section id="tuboPanel" class="panel">
                 <div class="panel-header">
                     <h2>Tubo de Trabajo (Agenda Colectiva de Compromisos Territorial)</h2>
@@ -312,7 +303,6 @@
                 </table>
             </section>
 
-            <!-- 3. SEMÁFORO DIARIO DE AVANCE -->
             <section id="semaforoPanel" class="panel">
                 <div class="panel-header">
                     <h2>Semáforo Diario de Avance de la Delegación</h2>
@@ -402,7 +392,6 @@
                 </table>
             </section>
 
-            <!-- 4. RESUMEN DELEGACIÓN -->
             <section id="resumenPanel" class="panel">
                 <div class="panel-header">
                     <h2>Resumen de Gestión y Frecuencia de Actividad por Funcionario</h2>
@@ -468,7 +457,6 @@
         </main>
     </div>
 
-    <!-- Enlace al archivo JavaScript externo -->
     <script src="js/main.js"></script>
 </body>
 </html>
