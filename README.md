@@ -35,7 +35,13 @@ python manage.py test -v 2
 python manage.py check
 ```
 
-El plan de casos y su ejecución están en [docs/plan-pruebas-unitarias.md](docs/plan-pruebas-unitarias.md).
+El plan de casos y su ejecución están en [Plan de pruebas unitarias](docs/plan-pruebas-unitarias.md).
+
+## Seguridad y arquitectura
+
+- [Estándares de seguridad](SECURITY.md)
+- [Arquitectura 4+1](docs/arquitectura-4mas1.md)
+- [Preparación de despliegue AWS](docs/despliegue-aws.md)
 
 ## Proyecto original
 
