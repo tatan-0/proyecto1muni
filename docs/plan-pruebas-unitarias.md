@@ -1,0 +1,59 @@
+# Plan de pruebas unitarias — SGR La Serena
+
+**Alcance:** configuración Django, modelos, permisos, CRUD de catálogos y vistas demostrativas de la etapa 2. Las pruebas corren sobre la base temporal que crea Django; no usan la base local ni datos de producción.
+
+**Responsables:** `Desarrollo` mantiene y corrige las pruebas. `QA del equipo` revisa los casos, repite la ejecución y completa sus nombres antes de la entrega final.
+
+**Criterio general de aprobación:** el caso termina en el resultado esperado, sin excepciones inesperadas ni cambios de datos fuera del alcance indicado. La columna de ejecución se completa después de correr la suite.
+
+## Casos de prueba
+
+| ID / prueba | Objetivo | Precondiciones | Datos | Pasos | Resultado esperado | Criterio de aprobación | Responsable | Resultado de ejecución |
+|---|---|---|---|---|---|---|---|---|
+| CFG-01 `test_development_settings_use_sqlite_by_default` | Confirmar la configuración local. | Python y dependencias instaladas. | Variables de producción retiradas; `DJANGO_DEBUG=True`. | Importar `config.settings` en un proceso aislado. | La base predeterminada es SQLite. | El proceso termina con código 0 y devuelve el motor SQLite. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CFG-02 `test_production_settings_reject_missing_secret_and_hosts` | Rechazar configuración insegura de producción. | Python y dependencias instaladas. | Falta `DJANGO_SECRET_KEY` o `DJANGO_ALLOWED_HOSTS`. | Importar settings en modo producción para cada ausencia. | Django informa cuál variable obligatoria falta y no inicia. | Ambos escenarios terminan con error de configuración explícito. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| MOD-01 `test_master_catalog_names_are_unique` | Evitar nombres duplicados en delegaciones, cargos y servicios. | Base temporal Django migrada. | Crear una fila y luego un nombre repetido por catálogo. | Ejecutar `full_clean()` sobre cada duplicado. | Cada duplicado produce un error de validación. | Ninguna entidad acepta un nombre ya usado en su catálogo. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| MOD-02 `test_indicator_rejects_invalid_weight_and_target` | Validar ponderador y meta trimestral. | Existe un cargo. | Ponderador `100.01`; meta `0`. | Validar cada indicador con `full_clean()`. | Ambos indicadores son rechazados. | El campo que incumple recibe `ValidationError`. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| MOD-03 `test_indicator_requires_existing_cargo` | Mantener la relación obligatoria con un cargo existente. | Base temporal Django migrada. | Indicador con `cargo_id` inexistente. | Ejecutar `full_clean()`. | El indicador no puede validarse. | Se informa el error de relación. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| MOD-04 `test_weight_sum_is_calculated_per_cargo` | Calcular ponderadores activos por cargo. | Existen dos cargos. | Dos indicadores del mismo cargo (uno inactivo) y uno de otro cargo. | Consultar el total para cada cargo. | Se suman únicamente los activos del cargo solicitado. | Los totales coinciden con los ponderadores activos insertados. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| MOD-05 `test_demo_data_command_is_idempotent` | Cargar catálogos ficticios sin duplicados ni credenciales. | Base temporal Django migrada. | Ejecutar `load_demo_data` dos veces. | Comparar nombres y cantidades después de ambas ejecuciones. | Quedan seis delegaciones, tres cargos, seis funcionarios y tres grupos; las cuentas no tienen contraseña utilizable. | La segunda carga no duplica registros y se conservan los seis territorios. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| PER-01 `test_anonymous_user_cannot_open_dashboard` | Exigir inicio de sesión al resumen. | Cliente Django anónimo. | Solicitud GET a `/`. | Consultar el resumen. | Respuesta redirige a `/login/`. | El dashboard no responde como contenido público. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| PER-02 `test_user_without_sgr_group_has_no_dashboard_access` | Denegar cuentas sin rol SGR. | Usuario autenticado sin grupos SGR. | Solicitud GET al resumen. | Autenticar al usuario y consultar `/`. | Respuesta HTTP 403. | La cuenta no obtiene contenido del sistema. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| PER-03 `test_admin_sees_all_staff` | Permitir al administrador consultar todas las fichas. | Usuario del grupo `ADMINISTRADOR`; tres perfiles de funcionario. | Funcionarios de distintas delegaciones. | Aplicar `funcionarios_visibles`. | El administrador obtiene las tres fichas. | La consulta contiene todo el conjunto de prueba. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| PER-04 `test_delegate_cannot_read_other_delegation_staff` | Restringir al delegado a su territorio. | Usuario `DELEGADO` con perfil asignado. | Dos funcionarios de su delegación y uno de otra. | Aplicar la consulta visible. | Solo se devuelven los dos perfiles de su delegación. | No aparece el perfil de otra delegación. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| PER-05 `test_dashboard_renders_only_current_delegation_staff` | Verificar el alcance también en la página renderizada. | Delegado autenticado y perfiles en dos delegaciones. | Nombre ficticio externo al territorio. | Abrir el resumen como delegado. | La página muestra su equipo y omite el nombre externo. | El contenido HTML no revela funcionarios ajenos. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| PER-06 `test_employee_sees_only_own_profile` | Limitar al funcionario a su ficha. | Usuario `FUNCIONARIO` con perfil asociado. | Perfil propio y otros perfiles de prueba. | Aplicar `funcionarios_visibles`. | La consulta devuelve solo el perfil del usuario. | No se devuelven otras fichas. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| PER-07 `test_login_view_renders_username_and_password_inputs` | Comprobar el formulario de acceso. | Cliente anónimo. | GET a `/login/`. | Renderizar el formulario. | Aparecen controles de usuario y contraseña. | Respuesta HTTP 200 con ambos campos. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CRUD-01 `test_admin_can_create_each_master_record` | Crear registros de las cinco tablas maestras. | Administrador autenticado; catálogos relacionados disponibles. | Delegación, cargo, funcionario, indicador y servicio ficticios. | Enviar un POST válido por entidad. | Cada formulario crea una fila y redirige a su listado. | Las cinco filas guardadas contienen los valores enviados. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CRUD-02 `test_admin_can_list_each_master_record` | Consultar las cinco tablas maestras. | Administrador autenticado; una fila activa por entidad. | Registros ficticios base. | Abrir cada listado. | Cada listado devuelve 200 y muestra su fila. | Se encuentra el registro esperado en las cinco listas. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CRUD-03 `test_admin_can_update_each_master_record` | Modificar registros de los cinco catálogos. | Administrador autenticado; una fila por entidad. | Valores actualizados ficticios. | Enviar POST de edición por entidad. | Cada fila conserva su ID y refleja el nuevo nombre. | Los cinco registros actualizados siguen activos. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CRUD-04 `test_admin_can_deactivate_each_master_record` | Aplicar baja lógica a cada entidad. | Administrador autenticado; una fila activa por entidad. | Registros base de prueba. | Abrir confirmación, confirmar la baja y revisar ambas listas. | La fila se oculta de activos y aparece en la vista completa. | `activo=False`; no se ejecuta un borrado físico. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CRUD-05 `test_invalid_and_duplicate_forms_do_not_persist` | Rechazar duplicados e indicadores inválidos. | Administrador autenticado; nombre duplicado y cargo válidos. | Nombre repetido; ponderador `101`. | Enviar ambos formularios inválidos. | La página vuelve con errores y la cantidad de filas no cambia. | No se persisten los dos intentos. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CRUD-06 `test_non_admin_cannot_create_master_record` | Proteger escrituras de catálogo. | Usuario autenticado con rol `DELEGADO`. | POST válido de una delegación. | Enviar la solicitud al endpoint de creación. | Respuesta HTTP 403. | No existe la fila enviada. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CRUD-07 `test_crud_post_requires_csrf_token` | Exigir token CSRF en escrituras. | Administrador autenticado y cliente con verificación CSRF habilitada. | POST válido sin token. | Enviar la solicitud. | Respuesta HTTP 403. | El registro no se crea. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CRUD-08 `test_deactivation_preserves_relations_and_hides_from_active_lists` | Conservar integridad referencial en una baja. | Cargo asociado a funcionario e indicador. | Desactivación lógica del cargo. | Desactivar y consultar ambas relaciones. | Las relaciones mantienen el ID del cargo; el cargo sale del listado activo. | No se borran ni reasignan las referencias existentes. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| VST-01 `test_each_sgr_template_renders_for_authenticated_user` | Renderizar las cinco pantallas SGR. | Funcionario autenticado con cargo, delegación e indicador. | Datos ficticios de cada módulo. | Abrir resumen, ficha, agenda, semáforo y actividad. | Cada vista devuelve 200 y su título esperado. | Se renderizan las cinco vistas. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| VST-02 `test_demo_views_show_demo_label` | Identificar los valores no transaccionales. | Usuario SGR autenticado. | Cinco vistas de ejemplo. | Revisar cada respuesta HTML. | Cada pantalla muestra “Datos de demostración”. | Ninguna pantalla sugiere datos operativos reales. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| VST-03 `test_anonymous_users_cannot_open_sgr_views` | Exigir autenticación en todas las vistas SGR. | Cliente anónimo. | Solicitud GET a las cinco rutas. | Abrir cada ruta sin sesión. | Cada respuesta redirige a inicio de sesión. | No se muestra contenido privado. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| VST-04 `test_employee_cannot_open_another_employees_ficha_by_changing_url` | Evitar acceso horizontal mediante URL manipulada. | Funcionario autenticado; existe otro perfil en distinta delegación. | ID del perfil externo en query string. | Solicitar `ficha?funcionario=<id-ajeno>`. | Se mantiene la ficha propia y no aparece el nombre externo. | El identificador manipulado no revela datos ajenos. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| VST-05 `test_operational_views_reject_transaction_posts` | Mantener las pantallas demostrativas solo de lectura. | Usuario SGR autenticado. | POST con payload de actividad en las cinco rutas. | Enviar una solicitud POST a cada vista. | Cada endpoint devuelve HTTP 405. | No se acepta ninguna escritura transaccional. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+
+## Ejecución
+
+Comando de la suite completa:
+
+```powershell
+python manage.py test -v 2
+```
+
+**Fecha de ejecución:** 19 de octubre de 2026 (America/Santiago).
+
+**Resultado global:** 27/27 pruebas aprobadas con `python manage.py test -v 2`; 0 errores y 0 fallos.
+
+**Revisión QA del equipo:** pendiente de firma; asignar los nombres de quienes mantendrán y revisarán la suite antes de entregar.
+
+### Chequeos adicionales
+
+- python manage.py check: sin errores ni avisos.
+- python manage.py check --deploy con DJANGO_DEBUG=False, DJANGO_SECRET_KEY de prueba y DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1: sin errores; un aviso security.W021 porque SECURE_HSTS_PRELOAD permanece desactivado hasta confirmar dominio propio y HTTPS de producción.
+
