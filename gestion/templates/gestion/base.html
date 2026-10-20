@@ -34,6 +34,10 @@
             <nav class="mx-auto max-w-7xl px-4 pb-2 sm:px-8" aria-label="Navegación principal">
                 <ul class="menu menu-horizontal flex-wrap gap-1 px-0 py-1 text-sm">
                     <li><a href="{% url 'gestion:dashboard' %}">Resumen</a></li>
+                    <li><a href="{% url 'gestion:ficha' %}">Ficha personal</a></li>
+                    <li><a href="{% url 'gestion:tubo' %}">Agenda de compromisos</a></li>
+                    <li><a href="{% url 'gestion:semaforo' %}">Semáforo diario</a></li>
+                    <li><a href="{% url 'gestion:resumen' %}">Resumen de actividad</a></li>
                     {% if sgr_es_admin %}
                         <li><a href="{% url 'maestros:delegaciones-lista' %}">Delegaciones</a></li>
                         <li><a href="{% url 'maestros:cargos-lista' %}">Cargos</a></li>
@@ -64,5 +68,6 @@
             Municipalidad de La Serena · SGR académico · Use datos ficticios para las demostraciones.
         </div>
     </footer>
+    <script src="{% static 'gestion/js/main.js' %}" defer></script>
 </body>
 </html>

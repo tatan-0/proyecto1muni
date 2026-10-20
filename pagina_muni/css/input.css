@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@source "../../gestion/templates/**/*.html";
+@source "../../gestion/static/gestion/js/**/*.js";
+@plugin "daisyui" {
+  themes: light --default;
+  logs: false;
+}
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  color-scheme: light;
+  --color-primary: oklch(38% 0.09 249);
+  --color-primary-content: oklch(98% 0.01 249);
+  --color-secondary: oklch(54% 0.08 205);
+}
+
+:root {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  scrollbar-color: color-mix(in oklab, var(--color-base-content) 28%, transparent) var(--color-base-200);
+  scrollbar-width: thin;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-content);
+}
+
+.table {
+  font-variant-numeric: tabular-nums;
+}
+
+.menu a[aria-current="page"] {
+  background-color: var(--color-base-200);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+meter {
+  accent-color: var(--color-primary);
+  height: 0.8rem;
+  min-width: 7rem;
+  vertical-align: middle;
+}
+
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,20 @@
+{% extends "gestion/base.html" %}
+{% block title %}Agenda de compromisos · SGR La Serena{% endblock %}
+{% block content %}
+<section aria-labelledby="page-title">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div><h1 id="page-title" class="text-3xl font-bold tracking-tight sm:text-4xl">Agenda de compromisos</h1><p class="mt-3 text-base-content/70">Vista colectiva para revisar próximos hitos y su estado.</p></div>
+        <span class="badge badge-info badge-soft">{{ demo_label }}</span>
+    </div>
+    <div role="note" class="alert alert-info mt-6"><span>La agenda es ilustrativa en esta etapa. Las acciones no se guardan ni cambian compromisos reales.</span></div>
+    {% if delegacion %}<p class="mt-5 text-sm text-base-content/65">Contexto: {{ delegacion.nombre }}</p>{% endif %}
+    <ol class="mt-4 divide-y divide-base-300 border-y border-base-300 bg-base-100">
+        {% for item in compromisos %}
+            <li class="grid gap-3 px-4 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-6">
+                <div><h2 class="font-semibold">{{ item.titulo }}</h2><p class="mt-1 text-sm text-base-content/65">Fecha estimada: {{ item.fecha|date:"l d M Y" }} · Equipo de la delegación</p></div>
+                <span class="badge badge-outline">{{ item.estado }}</span>
+            </li>
+        {% endfor %}
+    </ol>
+</section>
+{% endblock %}

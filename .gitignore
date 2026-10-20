@@ -4,5 +4,6 @@ __pycache__/
 .env
 *.sqlite3
 staticfiles/
+node_modules/
 .vscode/
 .worktrees/
