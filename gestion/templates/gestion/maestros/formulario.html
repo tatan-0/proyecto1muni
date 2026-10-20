@@ -1,0 +1,35 @@
+{% extends "gestion/base.html" %}
+{% block title %}{{ action_label }} · {{ entity_label }} · SGR La Serena{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-3xl" aria-labelledby="page-title">
+    <a class="link link-hover text-sm" href="{% url 'maestros:'|add:entity|add:'-lista' %}">Volver a {{ entity_label|lower }}</a>
+    <div class="mt-4 mb-7">
+        <h1 id="page-title" class="text-3xl font-bold tracking-tight">{{ action_label }} registro</h1>
+        <p class="mt-2 font-medium">{{ entity_label }}</p>
+        <p class="mt-2 text-base-content/70">Completa los campos y guarda los cambios. La validación se realiza en el servidor.</p>
+    </div>
+
+    <form method="post" class="space-y-6 rounded-box border border-base-300 bg-base-100 p-5 sm:p-8">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div role="alert" class="alert alert-error">
+                <div>{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+            </div>
+        {% endif %}
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+        {% for field in form.visible_fields %}
+            <div class="form-control gap-2">
+                <label for="{{ field.id_for_label }}" class="text-sm font-semibold">{{ field.label }}{% if field.field.required %}<span aria-hidden="true"> *</span><span class="sr-only"> (obligatorio)</span>{% endif %}</label>
+                {{ field }}
+                {% if field.help_text %}<p class="text-sm text-base-content/65">{{ field.help_text }}</p>{% endif %}
+                {% if field.errors %}<div class="space-y-1 text-sm text-error" role="alert">{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+            </div>
+        {% endfor %}
+        <p class="text-sm text-base-content/65"><span aria-hidden="true">*</span> Campo obligatorio.</p>
+        <div class="flex flex-wrap justify-end gap-2 border-t border-base-300 pt-5">
+            <a class="btn btn-ghost" href="{% url 'maestros:'|add:entity|add:'-lista' %}">Cancelar</a>
+            <button class="btn btn-primary" type="submit">Guardar cambios</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

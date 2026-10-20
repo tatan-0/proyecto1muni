@@ -1,0 +1,17 @@
+{% extends "gestion/base.html" %}
+{% block title %}Desactivar · {{ entity_label }} · SGR La Serena{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-2xl" aria-labelledby="page-title">
+    <a class="link link-hover text-sm" href="{% url 'maestros:'|add:entity|add:'-lista' %}">Volver a {{ entity_label|lower }}</a>
+    <div class="mt-4 rounded-box border border-base-300 bg-base-100 p-6 sm:p-8">
+        <h1 id="page-title" class="text-3xl font-bold tracking-tight">Desactivar registro</h1>
+        <p class="mt-4">¿Quieres desactivar <strong>{{ object }}</strong>?</p>
+        <p class="mt-2 text-base-content/70">El registro dejará de aparecer en las listas activas. Las relaciones existentes se conservarán y podrás consultarlo desde “Ver activos e inactivos”.</p>
+        <form method="post" class="mt-7 flex flex-wrap justify-end gap-2 border-t border-base-300 pt-5">
+            {% csrf_token %}
+            <a class="btn btn-ghost" href="{% url 'maestros:'|add:entity|add:'-lista' %}">Cancelar</a>
+            <button class="btn btn-error" type="submit">Sí, desactivar</button>
+        </form>
+    </div>
+</section>
+{% endblock %}
