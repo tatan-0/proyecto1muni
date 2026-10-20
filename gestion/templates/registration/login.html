@@ -8,18 +8,27 @@
     <link rel="stylesheet" href="{% static 'gestion/css/styles.css' %}">
 </head>
 <body class="min-h-screen bg-base-200 text-base-content">
-    <main class="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-10 sm:px-8">
-        <section class="grid w-full overflow-hidden rounded-box bg-base-100 shadow-xl md:grid-cols-[1fr_0.9fr]">
-            <div class="hidden flex-col justify-between bg-neutral p-10 text-neutral-content md:flex">
+    <main class="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-8 sm:px-8 sm:py-12">
+        <section class="grid w-full overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-xl md:grid-cols-[1fr_0.9fr]">
+            <div class="relative hidden flex-col justify-between border-b-8 border-warning bg-primary p-10 text-primary-content md:flex lg:p-12">
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-[0.2em]">Municipalidad de La Serena</p>
-                    <h1 class="mt-8 max-w-sm text-4xl font-bold leading-tight">Gestión territorial con foco en resultados.</h1>
+                    <div class="flex items-center gap-4">
+                        <span aria-hidden="true" class="grid size-14 place-items-center rounded-full border-2 border-warning bg-white text-xl font-black text-primary shadow-md">LS</span>
+                        <p class="max-w-xs text-sm font-bold uppercase leading-relaxed tracking-wider">Ilustre Municipalidad de La Serena</p>
+                    </div>
+                    <div class="mt-12 h-1 w-20 rounded-full bg-warning"></div>
+                    <h1 class="mt-6 max-w-sm text-4xl font-bold leading-tight lg:text-5xl">Gestión territorial con foco en resultados.</h1>
+                    <p class="mt-5 max-w-sm text-lg leading-relaxed text-primary-content/85">Una mirada clara al trabajo y los compromisos de cada delegación.</p>
                 </div>
-                <p class="max-w-sm text-sm opacity-75">Sistema de Gestión de Resultados para las delegaciones municipales.</p>
+                <div class="border-t border-primary-content/30 pt-5">
+                    <p class="text-xs font-bold uppercase tracking-widest text-primary-content/70">SGR · La Serena</p>
+                    <p class="mt-2 max-w-sm text-sm text-primary-content/85">Sistema de Gestión de Resultados para las delegaciones municipales.</p>
+                </div>
             </div>
             <div class="card">
-                <div class="card-body justify-center p-6 sm:p-10">
-                    <h2 class="card-title mt-2 text-3xl">Iniciar sesión</h2>
+                <div class="card-body justify-center p-6 sm:p-10 lg:p-12">
+                    <span class="badge badge-primary badge-soft mb-2 w-fit">Acceso municipal</span>
+                    <h2 class="card-title mt-1 text-3xl">Iniciar sesión</h2>
                     <p class="text-base-content/70">Ingresa con tu cuenta municipal habilitada.</p>
 
                     {% if form.non_field_errors %}

@@ -4,11 +4,11 @@
 <section aria-labelledby="page-title">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div><h1 id="page-title" class="text-3xl font-bold tracking-tight sm:text-4xl">Semáforo diario</h1><p class="mt-3 text-base-content/70">Comparación de avance observado con una referencia esperada.</p></div>
-        <span class="badge badge-info badge-soft">{{ demo_label }}</span>
+        <span class="badge badge-warning">{{ demo_label }}</span>
     </div>
     <p class="mt-5 text-sm text-base-content/65">Referencia ilustrativa al {{ fecha|date:"d M Y" }}. Los porcentajes no representan resultados municipales reales.</p>
-    <div class="mt-5 overflow-x-auto rounded-box border border-base-300 bg-base-100">
-        <table class="table table-zebra">
+    <div class="municipal-panel mt-5 overflow-x-auto rounded-box">
+        <table class="municipal-table table table-zebra">
             <caption class="sr-only">Avance de ejemplo por indicador</caption>
             <thead><tr><th scope="col">Indicador</th><th scope="col">Cargo</th><th scope="col">Avance ilustrativo</th><th scope="col">Meta de referencia</th><th scope="col">Estado</th></tr></thead>
             <tbody>

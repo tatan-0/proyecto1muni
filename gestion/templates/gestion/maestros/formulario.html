@@ -9,7 +9,7 @@
         <p class="mt-2 text-base-content/70">Completa los campos y guarda los cambios. La validación se realiza en el servidor.</p>
     </div>
 
-    <form method="post" class="space-y-6 rounded-box border border-base-300 bg-base-100 p-5 sm:p-8">
+    <form method="post" class="municipal-panel space-y-6 rounded-box p-5 sm:p-8">
         {% csrf_token %}
         {% if form.non_field_errors %}
             <div role="alert" class="alert alert-error">
