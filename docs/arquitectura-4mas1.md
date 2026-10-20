@@ -132,6 +132,8 @@ flowchart LR
 
 El diagrama representa el destino propuesto, no infraestructura existente. El acceso público queda en el balanceador con HTTPS. RDS debe permanecer sin acceso público y permitir conexión desde el grupo de seguridad de la aplicación. GitHub Pages conserva el sitio estático actual; no forma parte del camino de ejecución de Django.
 
+Elastic Beanstalk usa `/health/` para recibir una respuesta HTTP 200 de proceso. Esta ruta pública no consulta RDS ni demuestra que las migraciones o credenciales de base estén correctas.
+
 ## Resumen de las cinco vistas
 
 | Vista | Contenido en este proyecto |

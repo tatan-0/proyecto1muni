@@ -1,10 +1,11 @@
 from django.urls import path
 
-from gestion.views import dashboard, ficha, login_view, logout_view, resumen, semaforo, tubo
+from gestion.views import dashboard, ficha, health_check, login_view, logout_view, resumen, semaforo, tubo
 
 app_name = "gestion"
 
 urlpatterns = [
+    path("health/", health_check, name="health"),
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),
     path("", dashboard, name="dashboard"),

@@ -12,6 +12,10 @@
 |---|---|---|---|---|---|---|---|---|
 | CFG-01 `test_development_settings_use_sqlite_by_default` | Confirmar la configuración local. | Python y dependencias instaladas. | Variables de producción retiradas; `DJANGO_DEBUG=True`. | Importar `config.settings` en un proceso aislado. | La base predeterminada es SQLite. | El proceso termina con código 0 y devuelve el motor SQLite. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
 | CFG-02 `test_production_settings_reject_missing_secret_and_hosts` | Rechazar configuración insegura de producción. | Python y dependencias instaladas. | Falta `DJANGO_SECRET_KEY` o `DJANGO_ALLOWED_HOSTS`. | Importar settings en modo producción para cada ausencia. | Django informa cuál variable obligatoria falta y no inicia. | Ambos escenarios terminan con error de configuración explícito. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CFG-03 `test_production_settings_load_with_proxy_configuration` | Confirmar proxy HTTPS y exclusión de health check en producción. | Variables de producción de prueba. | `DJANGO_DEBUG=False`, clave temporal y host local. | Importar settings en proceso aislado. | Settings define `SECURE_PROXY_SSL_HEADER` y excluye `/health/` de redirect. | Se detectan el encabezado esperado y la ruta de salud exenta. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CFG-04 `test_mysql_settings_reject_missing_connection_variables` | Rechazar una conexión MySQL incompleta. | Python y dependencias instaladas. | `DB_ENGINE=mysql` sin datos de conexión. | Importar settings en proceso aislado. | Django informa configuración MySQL incompleta y no inicia. | El proceso termina con error que identifica variables faltantes. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CFG-05 `test_static_files_use_compressed_manifest_storage_and_whitenoise` | Verificar almacenamiento versionado y middleware para estáticos. | WhiteNoise instalado. | Configuración local por defecto. | Importar settings en proceso aislado. | WhiteNoise aparece en middleware y almacenamiento estático manifest. | Ambos componentes están configurados. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+| CFG-06 `test_production_settings_reject_missing_or_sqlite_database_engine` | Impedir iniciar producción con persistencia local efímera. | Configuración de producción de prueba. | `DJANGO_DEBUG=False`; `DB_ENGINE` ausente o `sqlite`. | Importar settings con ambas variantes. | Django rechaza el arranque y exige MySQL. | Cada variante termina con error de configuración que identifica `DB_ENGINE=mysql`. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
 | MOD-01 `test_master_catalog_names_are_unique` | Evitar nombres duplicados en delegaciones, cargos y servicios. | Base temporal Django migrada. | Crear una fila y luego un nombre repetido por catálogo. | Ejecutar `full_clean()` sobre cada duplicado. | Cada duplicado produce un error de validación. | Ninguna entidad acepta un nombre ya usado en su catálogo. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
 | MOD-02 `test_indicator_rejects_invalid_weight_and_target` | Validar ponderador y meta trimestral. | Existe un cargo. | Ponderador `100.01`; meta `0`. | Validar cada indicador con `full_clean()`. | Ambos indicadores son rechazados. | El campo que incumple recibe `ValidationError`. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
 | MOD-03 `test_indicator_requires_existing_cargo` | Mantener la relación obligatoria con un cargo existente. | Base temporal Django migrada. | Indicador con `cargo_id` inexistente. | Ejecutar `full_clean()`. | El indicador no puede validarse. | Se informa el error de relación. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
@@ -38,6 +42,8 @@
 | VST-04 `test_employee_cannot_open_another_employees_ficha_by_changing_url` | Evitar acceso horizontal mediante URL manipulada. | Funcionario autenticado; existe otro perfil en distinta delegación. | ID del perfil externo en query string. | Solicitar `ficha?funcionario=<id-ajeno>`. | Se mantiene la ficha propia y no aparece el nombre externo. | El identificador manipulado no revela datos ajenos. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
 | VST-05 `test_operational_views_reject_transaction_posts` | Mantener las pantallas demostrativas solo de lectura. | Usuario SGR autenticado. | POST con payload de actividad en las cinco rutas. | Enviar una solicitud POST a cada vista. | Cada endpoint devuelve HTTP 405. | No se acepta ninguna escritura transaccional. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
 
+| VST-06 `test_health_check_is_public_and_get_only` | Comprobar salud del proceso para el balanceador. | Aplicación configurada con redirect HTTPS. | GET y POST anónimos a `/health/`. | Consultar la ruta con ambos métodos. | GET devuelve `ok` y 200 sin redirigir; POST devuelve 405. | Ruta pública, de solo lectura, exenta del redirect y sin acceso a sesión. | Desarrollo; revisión QA del equipo | PASS — 2026-10-19 |
+
 ## Ejecución
 
 Comando de la suite completa:
@@ -48,7 +54,7 @@ python manage.py test -v 2
 
 **Fecha de ejecución:** 19 de octubre de 2026 (America/Santiago).
 
-**Resultado global:** 27/27 pruebas aprobadas con `python manage.py test -v 2`; 0 errores y 0 fallos.
+**Resultado global:** 32/32 pruebas aprobadas con `python manage.py test -v 2` el 19 de octubre de 2026; 0 errores y 0 fallos. La actualización incorporó las pruebas de despliegue WhiteNoise/MySQL, la obligación de MySQL en producción y la ruta de salud de Elastic Beanstalk.
 
 **Revisión QA del equipo:** pendiente de firma; asignar los nombres de quienes mantendrán y revisarán la suite antes de entregar.
 
@@ -56,4 +62,3 @@ python manage.py test -v 2
 
 - python manage.py check: sin errores ni avisos.
 - python manage.py check --deploy con DJANGO_DEBUG=False, DJANGO_SECRET_KEY de prueba y DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1: sin errores; un aviso security.W021 porque SECURE_HSTS_PRELOAD permanece desactivado hasta confirmar dominio propio y HTTPS de producción.
-

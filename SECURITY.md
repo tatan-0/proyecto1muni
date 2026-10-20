@@ -18,19 +18,23 @@ La autorización se aplica en las vistas del servidor. Ocultar enlaces en templa
 - **Validación en servidor:** los formularios usan `ModelForm`; los modelos aplican unicidad, relaciones obligatorias, ponderadores entre 0 y 100 y metas positivas. Las restricciones críticas también están en la base de datos.
 - **CSRF:** `CsrfViewMiddleware` permanece activo y los formularios POST incluyen token. La suite prueba que un POST CRUD sin token se rechaza.
 - **Lecturas y escrituras diferenciadas:** las páginas de agenda, ficha, semáforo, resumen y dashboard aceptan GET. Las actividades y compromisos son datos ficticios; un POST devuelve 405 y no guarda transacciones.
+- **Health check:** `/health/` expone solo `ok`, no requiere sesión, acepta únicamente GET y no consulta la base de datos. Queda exenta de la redirección HTTPS para que el balanceador compruebe el proceso por HTTP.
 - **Consultas y salida:** se usan ORM de Django y templates con escape automático. No se construyen sentencias SQL concatenando entradas ni se insertan datos de usuarios con `safe`.
 - **Integridad histórica:** las bajas de catálogos son lógicas (`activo=False`). Las relaciones protegidas usan `on_delete=PROTECT`; desactivar no elimina funcionarios ni indicadores relacionados.
 - **Contraseñas:** la autenticación delega en Django. El cargador de datos crea cuentas de demostración con contraseña no utilizable y no incluye credenciales de acceso.
 - **Datos:** los registros de muestra son ficticios. No cargar RUT, teléfonos, nombres de vecinos, credenciales reales ni información sensible en capturas o ambientes de prueba.
 - **Dependencias:** Python se fija en `requirements.txt`; Tailwind y daisyUI se fijan mediante `package-lock.json`. Node compila CSS durante desarrollo; el servidor sirve el archivo generado.
+- **Estáticos en producción:** WhiteNoise sirve archivos recolectados en `STATIC_ROOT` con nombres versionados mediante manifest; no se habilita el servidor estático de desarrollo en producción.
 
 ## Configuración local y producción
 
 En desarrollo, `DJANGO_DEBUG` puede omitirse y la base predeterminada es SQLite. La clave local de respaldo está marcada como no apta para producción.
 
-Con `DJANGO_DEBUG=False`, la aplicación no inicia si faltan `DJANGO_SECRET_KEY` o `DJANGO_ALLOWED_HOSTS`. Producción debe además configurar `DB_ENGINE=mysql`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST` y `DB_PORT`; los secretos se proporcionan en el entorno del servicio y no se guardan en el repositorio ni en capturas.
+Con `DJANGO_DEBUG=False`, la aplicación no inicia si faltan `DJANGO_SECRET_KEY` o `DJANGO_ALLOWED_HOSTS`. Producción también exige `DB_ENGINE=mysql` y los valores `DB_NAME`, `DB_USER`, `DB_PASSWORD` y `DB_HOST`; `DB_PORT` es opcional y usa `3306` por defecto. No permite caer a SQLite. Los secretos se proporcionan en el entorno del servicio y no se guardan en el repositorio ni en capturas.
 
 Con `DEBUG=False` quedan activados `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`, `SECURE_SSL_REDIRECT`, HSTS por un año y `SECURE_HSTS_INCLUDE_SUBDOMAINS`. `X_FRAME_OPTIONS` es `DENY` y `SECURE_CONTENT_TYPE_NOSNIFF` está activo. HSTS preload permanece desactivado hasta confirmar dominio propio, HTTPS y subdominios; `check --deploy` informa `security.W021` mientras siga pendiente.
+
+Detrás del proxy de Elastic Beanstalk, `SECURE_PROXY_SSL_HEADER` reconoce `X-Forwarded-Proto: https`. Esta confianza requiere que el proxy administrado sobrescriba el encabezado y que la aplicación no sea accesible directamente desde Internet; el equipo debe validar ese límite al crear el entorno.
 
 Antes de publicar una versión se debe revisar:
 

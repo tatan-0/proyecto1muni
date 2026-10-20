@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -64,7 +65,17 @@ TEMPLATES = [
 ]
 WSGI_APPLICATION = "config.wsgi.application"
 
-if os.environ.get("DB_ENGINE", "sqlite").strip().lower() == "mysql":
+db_engine = os.environ.get("DB_ENGINE", "sqlite").strip().lower()
+if not DEBUG and db_engine != "mysql":
+    raise ImproperlyConfigured("DB_ENGINE=mysql debe configurarse cuando DJANGO_DEBUG=False.")
+
+if db_engine == "mysql":
+    mysql_required = ("DB_NAME", "DB_USER", "DB_PASSWORD", "DB_HOST")
+    missing_mysql = [name for name in mysql_required if not os.environ.get(name, "").strip()]
+    if missing_mysql:
+        raise ImproperlyConfigured(
+            "Faltan variables de conexión MySQL: " + ", ".join(missing_mysql)
+        )
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
@@ -76,13 +87,15 @@ if os.environ.get("DB_ENGINE", "sqlite").strip().lower() == "mysql":
             "OPTIONS": {"charset": "utf8mb4"},
         }
     }
-else:
+elif db_engine == "sqlite":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+else:
+    raise ImproperlyConfigured("DB_ENGINE solo admite 'sqlite' o 'mysql'.")
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -98,6 +111,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "gestion:login"
@@ -111,3 +130,6 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 SECURE_HSTS_SECONDS = 31_536_000 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_REDIRECT_EXEMPT = [r"^health/$"]

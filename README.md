@@ -43,6 +43,10 @@ El plan de casos y su ejecución están en [Plan de pruebas unitarias](docs/plan
 - [Arquitectura 4+1](docs/arquitectura-4mas1.md)
 - [Preparación de despliegue AWS](docs/despliegue-aws.md)
 
+## Paquete para Elastic Beanstalk
+
+El repositorio incluye `Procfile`, `.ebextensions/01_django.config` y `.env.example` como base de configuración. `collectstatic` prepara los archivos servidos por WhiteNoise; Gunicorn inicia `config.wsgi:application`. `.env.example` es una plantilla de referencia: Django no carga archivos `.env` automáticamente, así que define las variables en tu terminal local. En AWS define las variables en la configuración protegida del entorno, sin subir `.env`. Las migraciones se ejecutan manualmente una vez tras verificar el destino.
+
 ## Proyecto original
 
 - Prototipo estático: [GitHub Pages](https://tatan-0.github.io/proyecto1muni/)

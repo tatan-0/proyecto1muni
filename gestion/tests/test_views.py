@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from gestion.models import Cargo, Delegacion, Funcionario, Indicador, Servicio
@@ -37,6 +37,14 @@ class SGRViewTests(TestCase):
         )
         Servicio.objects.create(nombre="Servicio de prueba")
         self.client.force_login(self.user)
+
+    @override_settings(SECURE_SSL_REDIRECT=True)
+    def test_health_check_is_public_and_get_only(self):
+        anonymous = Client()
+        response = anonymous.get("/health/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b"ok")
+        self.assertEqual(anonymous.post("/health/").status_code, 405)
 
     def test_each_sgr_template_renders_for_authenticated_user(self):
         for route_name, heading in self.pages.items():
