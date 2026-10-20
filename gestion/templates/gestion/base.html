@@ -1,0 +1,78 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>{% block title %}SGR La Serena{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'gestion/css/styles.css' %}">
+</head>
+<body class="min-h-screen bg-base-200 text-base-content">
+    <header class="border-b-4 border-warning bg-primary text-primary-content shadow-md">
+        <div class="navbar mx-auto max-w-screen-2xl px-4 sm:px-8">
+            <div class="navbar-start">
+                <a href="{% url 'gestion:dashboard' %}" class="flex items-center gap-3 rounded-field focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-content">
+                    <span aria-hidden="true" class="grid size-11 place-items-center rounded-full border-2 border-warning bg-white font-black text-primary shadow-sm">LS</span>
+                    <span>
+                        <span class="block text-xs font-bold uppercase tracking-wider sm:text-sm">Ilustre Municipalidad de La Serena</span>
+                        <span class="block text-xs text-primary-content/80 sm:text-sm">Sistema de Gestión de Resultados</span>
+                    </span>
+                </a>
+            </div>
+            <div class="navbar-end gap-2 sm:gap-4">
+                {% if request.user.is_authenticated %}
+                    <span class="hidden rounded-full border border-primary-content/40 bg-primary-content/10 px-3 py-2 text-sm font-semibold sm:inline">{{ request.user.get_username }}</span>
+                    <form method="post" action="{% url 'gestion:logout' %}">
+                        {% csrf_token %}
+                        <button class="btn btn-sm border-primary-content/70 bg-transparent text-primary-content hover:bg-primary-content hover:text-primary" type="submit">Cerrar sesión</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <div class="mx-auto min-h-[calc(100vh-5rem)] max-w-screen-2xl lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
+        {% if request.user.is_authenticated %}
+            <nav class="municipal-nav bg-secondary text-secondary-content shadow-inner" aria-label="Navegación principal">
+                <ul class="menu menu-horizontal w-full flex-nowrap gap-1 overflow-x-auto p-2 text-sm lg:menu-vertical lg:sticky lg:top-0 lg:min-h-[calc(100vh-5rem)] lg:flex-nowrap lg:overflow-visible lg:p-4">
+                    <li class="menu-title hidden px-4 pb-3 text-secondary-content/65 lg:block">Módulos del sistema</li>
+                    <li><a href="{% url 'gestion:dashboard' %}"><span aria-hidden="true">📊</span>Resumen de gestión</a></li>
+                    <li><a href="{% url 'gestion:ficha' %}"><span aria-hidden="true">📋</span>Ficha personal</a></li>
+                    <li><a href="{% url 'gestion:tubo' %}"><span aria-hidden="true">📅</span>Agenda de compromisos</a></li>
+                    <li><a href="{% url 'gestion:semaforo' %}"><span aria-hidden="true">🚦</span>Semáforo diario</a></li>
+                    <li><a href="{% url 'gestion:resumen' %}"><span aria-hidden="true">📈</span>Resumen de actividad</a></li>
+                    {% if sgr_es_admin %}
+                        <li class="menu-title hidden mt-5 px-4 pb-3 text-secondary-content/65 lg:block">Administración</li>
+                        <li><a href="{% url 'maestros:delegaciones-lista' %}"><span aria-hidden="true">📍</span>Delegaciones</a></li>
+                        <li><a href="{% url 'maestros:cargos-lista' %}"><span aria-hidden="true">🧭</span>Cargos</a></li>
+                        <li><a href="{% url 'maestros:funcionarios-lista' %}"><span aria-hidden="true">👥</span>Funcionarios</a></li>
+                        <li><a href="{% url 'maestros:indicadores-lista' %}"><span aria-hidden="true">🎯</span>Indicadores</a></li>
+                        <li><a href="{% url 'maestros:servicios-lista' %}"><span aria-hidden="true">🏛️</span>Servicios</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+
+        <main class="municipal-main min-h-[70vh] px-4 py-7 sm:px-7 sm:py-9 lg:px-9">
+        {% if messages %}
+            <div class="mb-6 space-y-3" aria-live="polite">
+                {% for message in messages %}
+                    <div role="status" class="alert {% if 'error' in message.tags %}alert-error{% elif 'success' in message.tags %}alert-success{% elif 'warning' in message.tags %}alert-warning{% else %}alert-info{% endif %}">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <footer class="border-t-4 border-warning bg-secondary text-secondary-content">
+        <div class="mx-auto max-w-screen-2xl px-4 py-5 text-xs text-secondary-content/75 sm:px-8">
+            Municipalidad de La Serena · SGR académico · Use datos ficticios para las demostraciones.
+        </div>
+    </footer>
+    <script src="{% static 'gestion/js/main.js' %}" defer></script>
+</body>
+</html>
