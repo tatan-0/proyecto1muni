@@ -2,27 +2,36 @@
 
 Aplicación académica para visualizar el seguimiento territorial y gestionar los catálogos maestros del SGR. Los datos generados para la demostración son ficticios. En esta etapa, actividades y compromisos se muestran sin persistir transacciones.
 
-## Requisitos
+## Inicio rápido en Windows
 
-- Python 3.11 o posterior.
-- Node.js y npm para compilar los estilos locales.
-- SQLite para desarrollo local. MySQL se configura mediante variables de entorno para despliegue.
+1. Instala Python 3.11 o posterior.
+2. Descarga este repositorio y abre PowerShell en su carpeta.
+3. Ejecuta:
 
-## Ejecución local
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\iniciar_sgr_local.ps1
+   ```
+
+El script crea un entorno Python local, instala Django, prepara la base SQLite, carga catálogos ficticios y solicita crear una cuenta administradora la primera vez. Luego inicia la aplicación en <http://127.0.0.1:8000/>. Deja abierta la ventana de PowerShell mientras la usas; `Ctrl+C` detiene el servidor.
+
+La cuenta administradora permite entrar al SGR. Los datos cargados son ficticios y no se crean contraseñas compartidas. La base queda guardada en `db.sqlite3` en ese equipo.
+
+## Inicio manual
+
+Requiere Python 3.11 o posterior y Node.js/npm solo si necesitas recompilar el CSS.
 
 ```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
+py -3 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 npm ci
 npm run build:css
-python manage.py migrate
-python manage.py load_demo_data
-python manage.py createsuperuser
-python manage.py runserver
+.\.venv\Scripts\python.exe manage.py migrate
+.\.venv\Scripts\python.exe manage.py load_demo_data
+.\.venv\Scripts\python.exe manage.py createsuperuser
+.\.venv\Scripts\python.exe manage.py runserver
 ```
 
-La aplicación queda disponible en `http://127.0.0.1:8000/`. El comando `load_demo_data` crea registros ficticios repetibles y no establece contraseñas de acceso. Los estilos se compilan localmente; Node no se necesita al ejecutar Django.
+Abre <http://127.0.0.1:8000/> e inicia sesión con la cuenta que acabas de crear. La aplicación ya incluye el CSS compilado; Node no se necesita para ejecutarla si no modificas los estilos.
 
 La configuración local usa SQLite y valores de desarrollo. Para ejecutar en producción se deben definir `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, `DJANGO_ALLOWED_HOSTS` y los parámetros de base de datos; la aplicación rechaza iniciar si faltan el secreto o los hosts permitidos.
 
@@ -46,8 +55,3 @@ El plan de casos y su ejecución están en [Plan de pruebas unitarias](docs/plan
 ## Paquete para Elastic Beanstalk
 
 El repositorio incluye `Procfile`, `.ebextensions/01_django.config` y `.env.example` como base de configuración. `collectstatic` prepara los archivos servidos por WhiteNoise; Gunicorn inicia `config.wsgi:application`. `.env.example` es una plantilla de referencia: Django no carga archivos `.env` automáticamente, así que define las variables en tu terminal local. En AWS define las variables en la configuración protegida del entorno, sin subir `.env`. Las migraciones se ejecutan manualmente una vez tras verificar el destino.
-
-## Proyecto original
-
-- Prototipo estático: [GitHub Pages](https://tatan-0.github.io/proyecto1muni/)
-- Repositorio: [proyecto1muni](https://github.com/tatan-0/proyecto1muni)

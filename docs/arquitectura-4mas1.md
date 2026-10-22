@@ -73,7 +73,7 @@ flowchart LR
     Tests -. verifica .-> Models
 ```
 
-Paquetes presentes: `config` para settings, URL raíz y WSGI; `gestion.models`, `forms`, `permissions`, `views`, `templates`, `static`, `management.commands` y `tests`; `pagina_muni/css/input.css` y `package.json` para compilar la hoja de estilos. Las rutas `maestros:*` se montan desde `config.urls`; las rutas de operación usan `gestion:*`.
+Paquetes presentes: `config` para settings, URL raíz y WSGI; `gestion.models`, `forms`, `permissions`, `views`, `templates`, `static`, `management.commands` y `tests`; `frontend/input.css` y `package.json` para compilar la hoja de estilos. Las rutas `maestros:*` se montan desde `config.urls`; las rutas de operación usan `gestion:*`.
 
 ## Vista de procesos
 
@@ -130,7 +130,7 @@ flowchart LR
     Dev[Desarrollo local] --> SQLite[(SQLite)]
 ```
 
-El diagrama representa el destino propuesto, no infraestructura existente. El acceso público queda en el balanceador con HTTPS. RDS debe permanecer sin acceso público y permitir conexión desde el grupo de seguridad de la aplicación. GitHub Pages conserva el sitio estático actual; no forma parte del camino de ejecución de Django.
+El diagrama representa el destino propuesto, no infraestructura existente. El acceso público queda en el balanceador con HTTPS. RDS debe permanecer sin acceso público y permitir conexión desde el grupo de seguridad de la aplicación. Para desarrollo y revisión académica, Django se ejecuta localmente siguiendo el README.
 
 Elastic Beanstalk usa `/health/` para recibir una respuesta HTTP 200 de proceso. Esta ruta pública no consulta RDS ni demuestra que las migraciones o credenciales de base estén correctas.
 

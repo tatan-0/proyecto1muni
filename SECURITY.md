@@ -46,7 +46,7 @@ Antes de publicar una versión se debe revisar:
 
 ## Limitaciones conocidas
 
-- La aplicación no está desplegada; GitHub Pages solo conserva el prototipo estático y no ejecuta Django.
+- La aplicación no está desplegada. Para ejecutarla, sigue el inicio rápido del README; no compartas la base local ni credenciales.
 - No se ha realizado prueba de penetración, auditoría externa ni verificación visual en navegador dentro de este entorno.
 - AWS, su certificado TLS, cuenta, región, base RDS y dominio quedan pendientes de decisión y autorización del equipo.
 

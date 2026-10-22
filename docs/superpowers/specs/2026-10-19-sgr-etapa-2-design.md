@@ -8,7 +8,7 @@
 
 Convertir la interfaz SGR existente en una aplicación web estructurada que pueda demostrar las vistas requeridas para la gestión de delegaciones y los CRUD persistentes de sus tablas maestras. El alcance corresponde a la etapa 2 descrita en la evaluación del curso: la interfaz debe representar los módulos del sistema, mientras que las operaciones CRUD persistentes se concentran en datos maestros; las transacciones de actividades y compromisos quedan fuera de esta etapa.
 
-La página publicada en GitHub Pages es actualmente una versión estática. La aplicación Django se ejecutará como aplicación de servidor; GitHub Pages no ejecuta ese backend. El diseño conserva el flujo y propósito SGR visibles en la página publicada y usa el proyecto Node del ZIP como referencia de seguridad y presentación, sin mezclar sus pantallas SIGED con el SGR.
+La aplicación Django centraliza las vistas y el acceso a datos del SGR. El diseño mantiene la identidad visual municipal, adapta el flujo a las necesidades del sistema y conserva separadas las pantallas de otros proyectos de referencia.
 
 ## Objetivos y criterios de aceptación
 
@@ -115,10 +115,10 @@ Se entregarán como mínimo los diagramas de componentes/paquetes y despliegue s
 
 ## Supuestos y riesgos
 
-- `proyecto_integrado/` es la base local autorizada; la página de GitHub Pages sirve como referencia visual/funcional.
+- `proyecto_integrado/` es la base local autorizada para el desarrollo y la entrega.
 - El ZIP `proyecto-la-serena-main.zip` pertenece a una variante SIGED y sirve solo de referencia técnica.
 - Los roles, cargos, metas y servicios de producción deberán confirmarse con el equipo; el prototipo usará registros ficticios basados en la estructura funcional descrita en la presentación.
-- GitHub Pages no podrá servir el backend Django; para acceso remoto de la aplicación se necesitará un entorno de aplicación, por ejemplo Elastic Beanstalk.
+- Para el acceso remoto de la aplicación se necesitará un entorno de aplicación, por ejemplo Elastic Beanstalk.
 - El despliegue en AWS y las capturas de evidencia dependen de una cuenta del equipo y pueden incurrir en costos.
 
 ## Fuentes de requisitos

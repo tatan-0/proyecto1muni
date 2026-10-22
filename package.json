@@ -4,8 +4,8 @@
   "private": true,
   "description": "Compilación local de Tailwind CSS y daisyUI para el SGR académico.",
   "scripts": {
-    "build:css": "tailwindcss -i ./pagina_muni/css/input.css -o ./gestion/static/gestion/css/styles.css",
-    "watch:css": "tailwindcss -i ./pagina_muni/css/input.css -o ./gestion/static/gestion/css/styles.css --watch"
+    "build:css": "tailwindcss -i ./frontend/input.css -o ./gestion/static/gestion/css/styles.css",
+    "watch:css": "tailwindcss -i ./frontend/input.css -o ./gestion/static/gestion/css/styles.css --watch"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.0",

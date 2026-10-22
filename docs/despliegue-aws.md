@@ -1,6 +1,6 @@
 # Despliegue — SGR Municipalidad de La Serena
 
-**Estado:** configuración preparada; no hay entorno Elastic Beanstalk, base RDS, certificado ni URL de producción creados. La aplicación necesita un servicio Django: GitHub Pages solo sirve el prototipo estático.
+**Estado:** configuración preparada; no hay entorno Elastic Beanstalk, base RDS, certificado ni URL de producción creados. Para acceder a la aplicación mientras tanto, ejecútala localmente con las instrucciones del README.
 
 ## Arquitectura de destino
 
