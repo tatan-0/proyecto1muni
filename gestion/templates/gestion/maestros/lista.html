@@ -18,6 +18,22 @@
         </div>
     </div>
 
+    <form method="get" class="municipal-panel mb-5 flex flex-col gap-3 rounded-box p-4 sm:flex-row sm:items-end" role="search">
+        {% if show_inactive %}<input type="hidden" name="estado" value="todos">{% endif %}
+        <div class="form-control min-w-0 flex-1 gap-2">
+            <label for="catalog-search" class="text-sm font-semibold">Buscar en {{ entity_label|lower }}</label>
+            <input id="catalog-search" class="input input-bordered w-full" type="search" name="q" value="{{ search_query }}" placeholder="Escribe un nombre o detalle" autocomplete="off">
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button class="btn btn-neutral" type="submit">Buscar</button>
+            {% if search_query %}<a class="btn btn-ghost" href="{{ clear_search_url }}">Limpiar búsqueda</a>{% endif %}
+        </div>
+    </form>
+
+    <p class="mb-3 text-sm font-semibold text-base-content/70" role="status" aria-live="polite">
+        {{ result_count }} {% if result_count == 1 %}registro encontrado{% else %}registros encontrados{% endif %}{% if search_query %} para “{{ search_query }}”{% endif %}.
+    </p>
+
     <div class="municipal-panel overflow-x-auto rounded-box">
         <table class="municipal-table table table-zebra">
             <caption class="sr-only">Listado de {{ entity_label|lower }}</caption>
@@ -54,7 +70,7 @@
                             </td>
                         </tr>
                     {% empty %}
-                        <tr><td colspan="4" class="py-10 text-center text-base-content/70">No hay registros que coincidan con esta vista. Puedes crear el primero con el botón “Nuevo registro”.</td></tr>
+                        <tr><td colspan="4" class="py-10 text-center text-base-content/70">{% if search_query %}No encontramos coincidencias. Prueba con otro término o limpia la búsqueda.{% else %}No hay registros en esta vista. Puedes crear uno con el botón “Nuevo registro”.{% endif %}</td></tr>
                     {% endfor %}
                 {% endwith %}
             </tbody>

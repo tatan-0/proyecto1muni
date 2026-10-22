@@ -6,7 +6,7 @@
         <div class="max-w-3xl">
             <h1 id="page-title" class="text-3xl font-bold tracking-tight sm:text-4xl">Resumen de gestión</h1>
             <p class="mt-3 text-base-content/70">Consulta el trabajo territorial y accede a los módulos de seguimiento de resultados.</p>
-            <p class="mt-4"><span class="badge badge-warning">{{ demo_label }}</span></p>
+            <p class="mt-3 inline-flex rounded-field bg-warning px-3 py-2 text-sm font-semibold text-warning-content">Datos de catálogos guardados en el sistema</p>
         </div>
         {% if es_administrador %}
             <form method="get" class="flex w-full flex-col gap-2 sm:max-w-sm" aria-label="Filtrar resumen por delegación">
@@ -27,10 +27,10 @@
     </div>
 
     <dl class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-        <div class="rounded-box border-l-4 border-primary bg-base-100 p-4 shadow-sm sm:p-5"><dt class="text-sm text-base-content/65">Delegaciones visibles</dt><dd class="mt-2 text-3xl font-bold tabular-nums text-primary">{{ cantidad_delegaciones }}</dd></div>
-        <div class="rounded-box border-l-4 border-secondary bg-base-100 p-4 shadow-sm sm:p-5"><dt class="text-sm text-base-content/65">Funcionarios visibles</dt><dd class="mt-2 text-3xl font-bold tabular-nums text-secondary">{{ cantidad_funcionarios }}</dd></div>
-        <div class="rounded-box border-l-4 border-success bg-base-100 p-4 shadow-sm sm:p-5"><dt class="text-sm text-base-content/65">Indicadores activos</dt><dd class="mt-2 text-3xl font-bold tabular-nums text-success">{{ cantidad_indicadores }}</dd></div>
-        <div class="rounded-box border-l-4 border-info bg-base-100 p-4 shadow-sm sm:p-5"><dt class="text-sm text-base-content/65">Servicios activos</dt><dd class="mt-2 text-3xl font-bold tabular-nums text-info">{{ cantidad_servicios }}</dd></div>
+        <div class="rounded-box bg-primary p-4 text-primary-content shadow-sm sm:p-5"><dt class="text-sm font-semibold text-primary-content/80">Delegaciones visibles</dt><dd class="mt-2 text-3xl font-bold tabular-nums">{{ cantidad_delegaciones }}</dd></div>
+        <div class="rounded-box bg-secondary p-4 text-secondary-content shadow-sm sm:p-5"><dt class="text-sm font-semibold text-secondary-content/80">Funcionarios visibles</dt><dd class="mt-2 text-3xl font-bold tabular-nums">{{ cantidad_funcionarios }}</dd></div>
+        <div class="rounded-box bg-success p-4 text-success-content shadow-sm sm:p-5"><dt class="text-sm font-semibold text-success-content/80">Indicadores activos</dt><dd class="mt-2 text-3xl font-bold tabular-nums">{{ cantidad_indicadores }}</dd></div>
+        <div class="rounded-box bg-secondary p-4 text-secondary-content shadow-sm sm:p-5"><dt class="text-sm font-semibold text-secondary-content/80">Servicios activos</dt><dd class="mt-2 text-3xl font-bold tabular-nums">{{ cantidad_servicios }}</dd></div>
     </dl>
 
     <section class="mt-10" aria-labelledby="staff-heading">
@@ -39,7 +39,7 @@
                 <h2 id="staff-heading" class="text-xl font-semibold">Personal visible</h2>
                 <p class="mt-1 text-sm text-base-content/65">Los registros se limitan al alcance de tu perfil.</p>
             </div>
-            <span class="text-sm text-base-content/65">Actualizado {{ fecha_actualizacion|date:"d M Y" }}</span>
+            <span class="text-sm text-base-content/65">Consulta del {{ fecha_consulta|date:"d M Y" }}</span>
         </div>
         <div class="municipal-panel overflow-x-auto rounded-box">
             <table class="municipal-table table table-zebra">
@@ -62,10 +62,10 @@
     <section class="mt-10" aria-labelledby="modules-heading">
         <h2 id="modules-heading" class="text-xl font-semibold">Módulos de seguimiento</h2>
         <ul class="mt-4 grid gap-3 sm:grid-cols-2">
-            <li><a class="municipal-panel flex h-full items-center gap-4 rounded-box p-4 hover:bg-base-100 sm:p-5" href="{% url 'gestion:ficha' %}"><span class="grid size-12 shrink-0 place-items-center rounded-box bg-primary text-xl text-primary-content">📋</span><span><span class="block font-bold">Ficha del funcionario</span><span class="mt-1 block text-sm text-base-content/65">Metas, ponderadores y actividades de ejemplo</span></span></a></li>
-            <li><a class="municipal-panel flex h-full items-center gap-4 rounded-box p-4 hover:bg-base-100 sm:p-5" href="{% url 'gestion:tubo' %}"><span class="grid size-12 shrink-0 place-items-center rounded-box bg-secondary text-xl text-secondary-content">📅</span><span><span class="block font-bold">Agenda de compromisos</span><span class="mt-1 block text-sm text-base-content/65">Estados y fechas ilustrativas del trabajo colectivo</span></span></a></li>
-            <li><a class="municipal-panel flex h-full items-center gap-4 rounded-box p-4 hover:bg-base-100 sm:p-5" href="{% url 'gestion:semaforo' %}"><span class="grid size-12 shrink-0 place-items-center rounded-box bg-warning text-xl text-warning-content">🚦</span><span><span class="block font-bold">Semáforo diario</span><span class="mt-1 block text-sm text-base-content/65">Avance de ejemplo comparado con la meta esperada</span></span></a></li>
-            <li><a class="municipal-panel flex h-full items-center gap-4 rounded-box p-4 hover:bg-base-100 sm:p-5" href="{% url 'gestion:resumen' %}"><span class="grid size-12 shrink-0 place-items-center rounded-box bg-success text-xl text-success-content">📈</span><span><span class="block font-bold">Resumen de actividad</span><span class="mt-1 block text-sm text-base-content/65">Vista agregada de actividades y compromisos de demostración</span></span></a></li>
+            <li><a class="municipal-panel flex h-full items-center gap-4 rounded-box p-4 hover:bg-base-100 sm:p-5" href="{% url 'gestion:ficha' %}"><span class="grid size-12 shrink-0 place-items-center rounded-box bg-primary text-primary-content"><svg class="size-6" aria-hidden="true"><use href="#icon-person"/></svg></span><span><span class="block font-bold">Ficha del funcionario</span><span class="mt-1 block text-sm text-base-content/65">Cargo, delegación e indicadores asociados</span></span></a></li>
+            <li><a class="municipal-panel flex h-full items-center gap-4 rounded-box p-4 hover:bg-base-100 sm:p-5" href="{% url 'gestion:tubo' %}"><span class="grid size-12 shrink-0 place-items-center rounded-box bg-secondary text-secondary-content"><svg class="size-6" aria-hidden="true"><use href="#icon-calendar"/></svg></span><span><span class="block font-bold">Agenda de compromisos</span><span class="mt-1 block text-sm text-base-content/65">Los compromisos aparecerán cuando existan registros</span></span></a></li>
+            <li><a class="municipal-panel flex h-full items-center gap-4 rounded-box p-4 hover:bg-base-100 sm:p-5" href="{% url 'gestion:semaforo' %}"><span class="grid size-12 shrink-0 place-items-center rounded-box bg-warning text-warning-content"><svg class="size-6" aria-hidden="true"><use href="#icon-target"/></svg></span><span><span class="block font-bold">Metas e indicadores</span><span class="mt-1 block text-sm text-base-content/65">Metas guardadas; el avance aún no está registrado</span></span></a></li>
+            <li><a class="municipal-panel flex h-full items-center gap-4 rounded-box p-4 hover:bg-base-100 sm:p-5" href="{% url 'gestion:resumen' %}"><span class="grid size-12 shrink-0 place-items-center rounded-box bg-success text-success-content"><svg class="size-6" aria-hidden="true"><use href="#icon-map"/></svg></span><span><span class="block font-bold">Resumen territorial</span><span class="mt-1 block text-sm text-base-content/65">Personal e indicadores desde los catálogos</span></span></a></li>
         </ul>
     </section>
 </section>

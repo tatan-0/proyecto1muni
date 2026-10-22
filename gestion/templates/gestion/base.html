@@ -9,6 +9,16 @@
     <link rel="stylesheet" href="{% static 'gestion/css/styles.css' %}">
 </head>
 <body class="min-h-screen bg-base-200 text-base-content">
+    <svg class="sr-only" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="icon-overview" viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 15v-3m4 3V7m4 8v-5m4 5V4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></symbol>
+        <symbol id="icon-person" viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0m8-11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></symbol>
+        <symbol id="icon-calendar" viewBox="0 0 24 24"><path d="M7 3v4m10-4v4M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Zm3 8h2m4 0h2m-8 4h2m4 0h2" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></symbol>
+        <symbol id="icon-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m14.5 9.5 6-6m-3 0h3v3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></symbol>
+        <symbol id="icon-map" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></symbol>
+        <symbol id="icon-briefcase" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 7V4h8v3m-13 5h18m-11 0v2h4v-2" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></symbol>
+        <symbol id="icon-group" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2m5.5-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm12 9v-2a4 4 0 0 0-3-3.87M16 4.13a4 4 0 0 1 0 7.75" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></symbol>
+        <symbol id="icon-building" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 12h.01M12 12h.01M16 12h.01" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></symbol>
+    </svg>
     <header class="border-b-4 border-warning bg-primary text-primary-content shadow-md">
         <div class="navbar mx-auto max-w-screen-2xl px-4 sm:px-8">
             <div class="navbar-start">
@@ -37,18 +47,18 @@
             <nav class="municipal-nav bg-secondary text-secondary-content shadow-inner" aria-label="Navegación principal">
                 <ul class="menu menu-horizontal w-full flex-nowrap gap-1 overflow-x-auto p-2 text-sm lg:menu-vertical lg:sticky lg:top-0 lg:min-h-[calc(100vh-5rem)] lg:flex-nowrap lg:overflow-visible lg:p-4">
                     <li class="menu-title hidden px-4 pb-3 text-secondary-content/65 lg:block">Módulos del sistema</li>
-                    <li><a href="{% url 'gestion:dashboard' %}"><span aria-hidden="true">📊</span>Resumen de gestión</a></li>
-                    <li><a href="{% url 'gestion:ficha' %}"><span aria-hidden="true">📋</span>Ficha personal</a></li>
-                    <li><a href="{% url 'gestion:tubo' %}"><span aria-hidden="true">📅</span>Agenda de compromisos</a></li>
-                    <li><a href="{% url 'gestion:semaforo' %}"><span aria-hidden="true">🚦</span>Semáforo diario</a></li>
-                    <li><a href="{% url 'gestion:resumen' %}"><span aria-hidden="true">📈</span>Resumen de actividad</a></li>
+                    <li><a href="{% url 'gestion:dashboard' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-overview"/></svg>Resumen de gestión</a></li>
+                    <li><a href="{% url 'gestion:ficha' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-person"/></svg>Ficha personal</a></li>
+                    <li><a href="{% url 'gestion:tubo' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-calendar"/></svg>Agenda de compromisos</a></li>
+                    <li><a href="{% url 'gestion:semaforo' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-target"/></svg>Metas e indicadores</a></li>
+                    <li><a href="{% url 'gestion:resumen' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-map"/></svg>Resumen territorial</a></li>
                     {% if sgr_es_admin %}
                         <li class="menu-title hidden mt-5 px-4 pb-3 text-secondary-content/65 lg:block">Administración</li>
-                        <li><a href="{% url 'maestros:delegaciones-lista' %}"><span aria-hidden="true">📍</span>Delegaciones</a></li>
-                        <li><a href="{% url 'maestros:cargos-lista' %}"><span aria-hidden="true">🧭</span>Cargos</a></li>
-                        <li><a href="{% url 'maestros:funcionarios-lista' %}"><span aria-hidden="true">👥</span>Funcionarios</a></li>
-                        <li><a href="{% url 'maestros:indicadores-lista' %}"><span aria-hidden="true">🎯</span>Indicadores</a></li>
-                        <li><a href="{% url 'maestros:servicios-lista' %}"><span aria-hidden="true">🏛️</span>Servicios</a></li>
+                        <li><a href="{% url 'maestros:delegaciones-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-map"/></svg>Delegaciones</a></li>
+                        <li><a href="{% url 'maestros:cargos-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-briefcase"/></svg>Cargos</a></li>
+                        <li><a href="{% url 'maestros:funcionarios-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-group"/></svg>Funcionarios</a></li>
+                        <li><a href="{% url 'maestros:indicadores-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-target"/></svg>Indicadores</a></li>
+                        <li><a href="{% url 'maestros:servicios-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-building"/></svg>Servicios</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -70,7 +80,7 @@
 
     <footer class="border-t-4 border-warning bg-secondary text-secondary-content">
         <div class="mx-auto max-w-screen-2xl px-4 py-5 text-xs text-secondary-content/75 sm:px-8">
-            Municipalidad de La Serena · SGR académico · Use datos ficticios para las demostraciones.
+            Municipalidad de La Serena · Sistema de Gestión de Resultados
         </div>
     </footer>
     <script src="{% static 'gestion/js/main.js' %}" defer></script>

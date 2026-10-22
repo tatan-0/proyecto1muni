@@ -23,7 +23,7 @@ MAESTROS = {
         "model": Funcionario,
         "form_class": FuncionarioForm,
         "label": "Funcionarios",
-        "description": "Asocia cuentas de acceso ficticias a cargos y delegaciones.",
+        "description": "Asocia cuentas a cargos y delegaciones para organizar el equipo municipal.",
     },
     "indicadores": {
         "model": Indicador,

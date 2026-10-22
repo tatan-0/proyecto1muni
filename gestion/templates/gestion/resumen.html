@@ -1,23 +1,23 @@
 {% extends "gestion/base.html" %}
-{% block title %}Resumen de actividad · SGR La Serena{% endblock %}
+{% block title %}Resumen territorial · SGR La Serena{% endblock %}
 {% block content %}
 <section aria-labelledby="page-title">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div><h1 id="page-title" class="text-3xl font-bold tracking-tight sm:text-4xl">Resumen de actividad</h1><p class="mt-3 text-base-content/70">Vista agregada de actividad territorial y compromisos.</p></div>
-        <span class="badge badge-warning">{{ demo_label }}</span>
+        <div><h1 id="page-title" class="text-3xl font-bold tracking-tight sm:text-4xl">Resumen territorial</h1><p class="mt-3 text-base-content/70">Personal e indicadores activos asociados a cada delegación.</p></div>
     </div>
-    <p class="mt-5 text-sm text-base-content/65">Los totales y las fechas de este resumen son ficticios; no se han cargado como transacciones.</p>
-    <dl class="mt-6 grid grid-cols-2 divide-x divide-base-300 border-y border-base-300 bg-base-100 sm:max-w-xl">
-        <div class="p-4"><dt class="text-sm text-base-content/65">Actividades de ejemplo</dt><dd class="mt-2 text-2xl font-semibold tabular-nums">{{ cantidad_actividades }}</dd></div>
-        <div class="p-4"><dt class="text-sm text-base-content/65">Compromisos de ejemplo</dt><dd class="mt-2 text-2xl font-semibold tabular-nums">{{ cantidad_compromisos }}</dd></div>
+    <dl class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div class="rounded-box bg-primary p-4 text-primary-content"><dt class="text-sm font-semibold text-primary-content/80">Delegaciones</dt><dd class="mt-2 text-2xl font-bold tabular-nums">{{ cantidad_delegaciones }}</dd></div>
+        <div class="rounded-box bg-secondary p-4 text-secondary-content"><dt class="text-sm font-semibold text-secondary-content/80">Funcionarios</dt><dd class="mt-2 text-2xl font-bold tabular-nums">{{ cantidad_funcionarios }}</dd></div>
+        <div class="rounded-box bg-success p-4 text-success-content"><dt class="text-sm font-semibold text-success-content/80">Indicadores</dt><dd class="mt-2 text-2xl font-bold tabular-nums">{{ cantidad_indicadores }}</dd></div>
+        <div class="rounded-box bg-warning p-4 text-warning-content"><dt class="text-sm font-semibold text-warning-content/80">Servicios</dt><dd class="mt-2 text-2xl font-bold tabular-nums">{{ cantidad_servicios }}</dd></div>
     </dl>
     <div class="municipal-panel mt-6 overflow-x-auto rounded-box">
         <table class="municipal-table table table-zebra">
-            <caption class="sr-only">Totales de actividad de demostración por delegación visible</caption>
-            <thead><tr><th scope="col">Delegación</th><th scope="col">Actividades</th><th scope="col">Compromisos</th><th scope="col">Última actualización de ejemplo</th></tr></thead>
+            <caption class="sr-only">Funcionarios e indicadores activos por delegación</caption>
+            <thead><tr><th scope="col">Delegación</th><th scope="col">Funcionarios activos</th><th scope="col">Indicadores vinculados</th></tr></thead>
             <tbody>
-                {% for fila in filas %}<tr><th scope="row">{{ fila.delegacion.nombre }}</th><td class="tabular-nums">{{ fila.actividades }}</td><td class="tabular-nums">{{ fila.compromisos }}</td><td>{{ fila.ultima_actualizacion|date:"d M Y" }}</td></tr>
-                {% empty %}<tr><td colspan="4" class="py-8 text-center text-base-content/70">No hay delegaciones activas en el alcance de este perfil.</td></tr>{% endfor %}
+                {% for fila in filas %}<tr><th scope="row">{{ fila.delegacion.nombre }}</th><td class="tabular-nums">{{ fila.cantidad_funcionarios }}</td><td class="tabular-nums">{{ fila.cantidad_indicadores }}</td></tr>
+                {% empty %}<tr><td colspan="3" class="py-8 text-center text-base-content/70">No hay delegaciones activas asociadas a este perfil.</td></tr>{% endfor %}
             </tbody>
         </table>
     </div>

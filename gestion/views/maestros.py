@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -21,13 +22,36 @@ class MaestroListView(AdminRequiredMixin, ListView):
     entity = ""
     entity_label = ""
     description = ""
+    search_fields = {
+        "delegaciones": ("nombre", "descripcion_territorial"),
+        "cargos": ("nombre", "area"),
+        "funcionarios": ("nombre", "usuario__username", "cargo__nombre", "delegacion__nombre"),
+        "indicadores": ("nombre", "cargo__nombre", "unidad_medida"),
+        "servicios": ("nombre", "descripcion"),
+    }
 
     def get_queryset(self):
         queryset = super().get_queryset()
         self.show_inactive = self.request.GET.get("estado") == "todos"
         if not self.show_inactive:
             queryset = queryset.filter(activo=True)
+        self.search_query = self.request.GET.get("q", "").strip()
+        if self.search_query:
+            search = Q()
+            for field in self.search_fields[self.entity]:
+                search |= Q(**{f"{field}__icontains": self.search_query})
+            queryset = queryset.filter(search)
         return queryset
+
+    def _list_url(self, include_inactive, include_search=True):
+        params = self.request.GET.copy()
+        params.pop("estado", None)
+        if not include_search:
+            params.pop("q", None)
+        if include_inactive:
+            params["estado"] = "todos"
+        url = reverse(f"maestros:{self.entity}-lista")
+        return f"{url}?{params.urlencode()}" if params else url
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -38,8 +62,14 @@ class MaestroListView(AdminRequiredMixin, ListView):
                 "description": self.description,
                 "show_inactive": self.show_inactive,
                 "create_url": reverse(f"maestros:{self.entity}-crear"),
-                "inactive_url": f"{reverse(f'maestros:{self.entity}-lista')}?estado=todos",
-                "active_url": reverse(f"maestros:{self.entity}-lista"),
+                "inactive_url": self._list_url(include_inactive=True),
+                "active_url": self._list_url(include_inactive=False),
+                "clear_search_url": self._list_url(
+                    include_inactive=self.show_inactive,
+                    include_search=False,
+                ),
+                "search_query": self.search_query,
+                "result_count": len(context["object_list"]),
             }
         )
         return context

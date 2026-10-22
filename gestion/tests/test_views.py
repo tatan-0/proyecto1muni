@@ -12,7 +12,7 @@ class SGRViewTests(TestCase):
         "gestion:ficha": "Ficha del funcionario",
         "gestion:tubo": "Agenda de compromisos",
         "gestion:semaforo": "Semáforo diario",
-        "gestion:resumen": "Resumen de actividad",
+        "gestion:resumen": "Resumen territorial",
     }
 
     def setUp(self):
@@ -53,10 +53,10 @@ class SGRViewTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertContains(response, heading)
 
-    def test_demo_views_show_demo_label(self):
+    def test_sgr_views_use_persisted_data_without_demo_label(self):
         for route_name in self.pages:
             with self.subTest(route=route_name):
-                self.assertContains(self.client.get(reverse(route_name)), "Datos de demostración")
+                self.assertNotContains(self.client.get(reverse(route_name)), "Datos de demostración")
 
     def test_anonymous_users_cannot_open_sgr_views(self):
         anonymous = Client()
