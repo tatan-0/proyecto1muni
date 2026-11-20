@@ -5,6 +5,7 @@ from gestion.views import (
     logout_view, mis_tareas, panel_cumplimiento, resumen, revisar_tarea,
     semaforo, subir_evidencia, tubo,
 )
+from gestion.views.usuarios import usuario_clave, usuario_crear, usuario_editar, usuarios_lista
 
 app_name = "gestion"
 
@@ -24,4 +25,9 @@ urlpatterns = [
     path("tareas/<int:pk>/evidencia/", subir_evidencia, name="subir_evidencia"),
     path("tareas/<int:pk>/revisar/", revisar_tarea, name="revisar_tarea"),
     path("cumplimiento/", panel_cumplimiento, name="panel_cumplimiento"),
+    # Administración de usuarios (solo administrador)
+    path("usuarios/", usuarios_lista, name="usuarios_lista"),
+    path("usuarios/nuevo/", usuario_crear, name="usuario_crear"),
+    path("usuarios/<int:pk>/", usuario_editar, name="usuario_editar"),
+    path("usuarios/<int:pk>/clave/", usuario_clave, name="usuario_clave"),
 ]

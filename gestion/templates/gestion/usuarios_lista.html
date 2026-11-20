@@ -1,0 +1,29 @@
+{% extends "gestion/base.html" %}
+{% block title %}Usuarios · SGR La Serena{% endblock %}
+{% block content %}
+<section aria-labelledby="page-title">
+    {% include "gestion/_banner.html" with titulo="Usuarios" subtitulo="Crea cuentas, asigna el rol y cambia contraseñas." %}
+    <div class="ls-acciones">
+        <a class="btn btn-primary" href="{% url 'gestion:usuario_crear' %}">+ Nuevo usuario</a>
+    </div>
+    <div class="ls-panel" style="overflow-x:auto">
+        <table class="table w-full">
+            <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+            {% for u in usuarios %}
+                <tr>
+                    <td><strong>{{ u.username }}</strong></td>
+                    <td>{{ u.get_full_name|default:"—" }}</td>
+                    <td>{{ u.rol }}</td>
+                    <td>{% if u.is_active %}Activa{% else %}Desactivada{% endif %}</td>
+                    <td>
+                        <a href="{% url 'gestion:usuario_editar' u.pk %}">Editar</a> ·
+                        <a href="{% url 'gestion:usuario_clave' u.pk %}">Cambiar contraseña</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -60,6 +60,7 @@
                     {% endif %}
                     {% if sgr_es_admin %}
                         <li class="menu-title hidden mt-5 px-4 pb-3 text-secondary-content/65 lg:block">Administración</li>
+                        <li><a href="{% url 'gestion:usuarios_lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-group"/></svg>Usuarios</a></li>
                         <li><a href="{% url 'maestros:delegaciones-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-map"/></svg>Delegaciones</a></li>
                         <li><a href="{% url 'maestros:cargos-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-briefcase"/></svg>Cargos</a></li>
                         <li><a href="{% url 'maestros:funcionarios-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-group"/></svg>Funcionarios</a></li>
