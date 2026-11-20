@@ -26,7 +26,7 @@
 }
 .ls-banner > * { position: relative; }
 .ls-eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ls-oro); }
-.ls-title { margin-top: .35rem; font-size: 2rem; font-weight: 800; line-height: 1.1; }
+.ls-title { margin-top: .35rem; font-size: 2rem; font-weight: 800; line-height: 1.1; color: #fff; }
 .ls-sub { margin-top: .6rem; max-width: 38rem; color: rgba(255,255,255,.82); }
 .ls-banner svg { position: absolute; left: 0; bottom: -1px; width: 100%; height: 5.5rem; }
 .ls-arcos { /* friso de arcadas */
