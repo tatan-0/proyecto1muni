@@ -21,7 +21,11 @@ class Tarea(models.Model):
 
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
-    ubicacion = models.CharField("Lugar o sector", max_length=200, blank=True)
+    sector = models.ForeignKey(
+        "Delegacion", null=True, blank=True, on_delete=models.PROTECT,
+        related_name="tareas", verbose_name="Sector",
+    )
+    ubicacion = models.CharField("Calle o dirección", max_length=200, blank=True)
     prioridad = models.CharField(max_length=10, choices=Prioridad.choices, default=Prioridad.MEDIA)
     fecha_limite = models.DateField()
     estado = models.CharField(max_length=15, choices=Estado.choices, default=Estado.PENDIENTE)
@@ -38,6 +42,11 @@ class Tarea(models.Model):
         limit_choices_to={"groups__name": "DELEGADO"},
     )
     creada_en = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def lugar(self):
+        partes = [str(self.sector) if self.sector_id else "", self.ubicacion]
+        return " · ".join(p for p in partes if p)
 
     cumplida = models.BooleanField(default=False)
     validada_por = models.ForeignKey(

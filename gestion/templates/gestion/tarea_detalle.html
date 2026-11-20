@@ -2,7 +2,7 @@
 {% block title %}{{ tarea.titulo }} · SGR La Serena{% endblock %}
 {% block content %}
 <section aria-labelledby="page-title">
-    {% include "gestion/_banner.html" with titulo=tarea.titulo subtitulo=tarea.ubicacion %}
+    {% include "gestion/_banner.html" with titulo=tarea.titulo subtitulo=tarea.lugar %}
 
     <div class="ls-panel ls-estado-{{ tarea.estado }}">
         <div class="flex flex-wrap items-center gap-3">
@@ -19,7 +19,8 @@
         <p>{{ tarea.descripcion|linebreaksbr }}</p>
 
         <dl class="ls-datos">
-            <div><dt>Lugar</dt><dd>{{ tarea.ubicacion|default:"—" }}</dd></div>
+            <div><dt>Sector</dt><dd>{{ tarea.sector|default:"—" }}</dd></div>
+            <div><dt>Calle o dirección</dt><dd>{{ tarea.ubicacion|default:"—" }}</dd></div>
             <div><dt>Fecha límite</dt><dd>{{ tarea.fecha_limite|date:"d/m/Y" }}</dd></div>
             <div><dt>Profesional</dt><dd>{{ tarea.profesional.get_full_name|default:tarea.profesional.username }}</dd></div>
             <div><dt>Delegado revisor</dt><dd>{{ tarea.delegado.get_full_name|default:tarea.delegado.username }}</dd></div>

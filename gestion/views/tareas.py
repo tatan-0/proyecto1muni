@@ -53,7 +53,15 @@ def crear_tarea(request):
         tarea.save()
         messages.success(request, "Tarea creada y asignada.")
         return redirect("gestion:detalle_tarea", pk=tarea.pk)
-    return render(request, "gestion/tarea_form.html", {"form": form, "roles": roles_de(request.user)})
+    calles = {}
+    for sector_id, calle in (
+        Tarea.objects.exclude(ubicacion="").exclude(sector__isnull=True)
+        .values_list("sector_id", "ubicacion").distinct().order_by("ubicacion")
+    ):
+        calles.setdefault(str(sector_id), []).append(calle)
+    return render(request, "gestion/tarea_form.html", {
+        "form": form, "roles": roles_de(request.user), "calles_por_sector": calles,
+    })
 
 
 @login_required

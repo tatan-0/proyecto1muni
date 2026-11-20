@@ -79,15 +79,26 @@ def _active_or_current(queryset, instance, field_name):
 class TareaForm(SGRModelForm):
     class Meta:
         model = Tarea
-        fields = ("titulo", "descripcion", "ubicacion", "prioridad",
+        fields = ("titulo", "descripcion", "sector", "ubicacion", "prioridad",
                   "fecha_limite", "profesional", "delegado")
         widgets = {
             "fecha_limite": forms.DateInput(attrs={"type": "date"}),
             "descripcion": forms.Textarea(attrs={"rows": 4}),
+            "ubicacion": forms.TextInput(attrs={
+                "list": "lista-calles", "autocomplete": "off",
+                "placeholder": "Ej: Av. Francisco de Aguirre 450, entre Los Carrera y Brasil",
+            }),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["sector"].queryset = Delegacion.objects.filter(activo=True)
+        self.fields["sector"].required = True
+        self.fields["sector"].empty_label = "Selecciona un sector"
+        self.fields["ubicacion"].help_text = (
+            "Escribe la calle o dirección exacta. Si no está en la lista, "
+            "escríbela y quedará disponible para próximas tareas."
+        )
         User = get_user_model()
         self.fields["profesional"].queryset = User.objects.filter(
             groups__name="PROFESIONAL",
