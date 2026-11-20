@@ -1,6 +1,15 @@
 from django.contrib import admin
 
-from .models import Cargo, Delegacion, Funcionario, Indicador, Servicio
+from .models import Cargo, Delegacion, Evidencia, Funcionario, Indicador, Servicio, Tarea
+
+
+@admin.register(Tarea)
+class TareaAdmin(admin.ModelAdmin):
+    list_display = ("titulo", "profesional", "delegado", "estado", "cumplida", "fecha_limite")
+    list_filter = ("estado", "cumplida", "prioridad")
+
+
+admin.site.register(Evidencia)
 
 
 @admin.register(Delegacion)

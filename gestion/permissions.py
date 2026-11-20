@@ -29,3 +29,15 @@ def funcionarios_visibles(user):
     if user.groups.filter(name="FUNCIONARIO").exists():
         return funcionarios.filter(usuario_id=user.pk)
     return funcionarios.none()
+def roles_de(user):
+    """Devuelve un conjunto con los roles del usuario: admin, coordinador, delegado, profesional."""
+    if not user.is_authenticated:
+        return set()
+    nombres = set(user.groups.values_list("name", flat=True))
+    roles = set()
+    if usuario_es_admin(user):
+        roles.add("admin")
+    for nombre in ("COORDINADOR", "DELEGADO", "PROFESIONAL"):
+        if nombre in nombres:
+            roles.add(nombre.lower())
+    return roles

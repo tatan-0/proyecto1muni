@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-from gestion.models import Cargo, Delegacion, Funcionario, Indicador, Servicio
+from gestion.models import Cargo, Delegacion, Evidencia, Funcionario, Indicador, Servicio, Tarea
 
 
 class SGRModelForm(forms.ModelForm):
@@ -76,3 +76,41 @@ def _active_or_current(queryset, instance, field_name):
     if instance.pk and current_id:
         return queryset.filter(Q(activo=True) | Q(pk=current_id)).distinct()
     return active
+class TareaForm(SGRModelForm):
+    class Meta:
+        model = Tarea
+        fields = ("titulo", "descripcion", "ubicacion", "prioridad",
+                  "fecha_limite", "profesional", "delegado")
+        widgets = {
+            "fecha_limite": forms.DateInput(attrs={"type": "date"}),
+            "descripcion": forms.Textarea(attrs={"rows": 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        User = get_user_model()
+        self.fields["profesional"].queryset = User.objects.filter(
+            groups__name="PROFESIONAL",
+            is_active=True,
+        ).distinct()
+        self.fields["delegado"].queryset = User.objects.filter(
+            groups__name="DELEGADO",
+            is_active=True,
+        ).distinct()
+
+
+class EvidenciaForm(SGRModelForm):
+    class Meta:
+        model = Evidencia
+        fields = ("imagen", "descripcion")
+        labels = {"imagen": "Foto de evidencia", "descripcion": "Descripción (opcional)"}
+        widgets = {"imagen": forms.ClearableFileInput(attrs={"accept": "image/*", "capture": "environment"})}
+
+    def clean_imagen(self):
+        img = self.cleaned_data["imagen"]
+        if img.size > 5 * 1024 * 1024:
+            raise forms.ValidationError("La foto no puede superar 5 MB.")
+        tipo = getattr(img, "content_type", "")
+        if tipo not in ("image/jpeg", "image/png", "image/webp"):
+            raise forms.ValidationError("Solo se aceptan fotos JPG, PNG o WebP.")
+        return img

@@ -1,0 +1,53 @@
+{% extends "gestion/base.html" %}
+{% block title %}Panel de cumplimiento · SGR La Serena{% endblock %}
+{% block content %}
+<section aria-labelledby="page-title">
+    {% include "gestion/_banner.html" with titulo="Panel de cumplimiento" subtitulo="Qué se ha cumplido, qué espera revisión y qué sigue pendiente en terreno." %}
+
+    <div class="ls-panel" style="margin-bottom:1.5rem">
+        <div class="ls-progreso" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ porcentaje }}" aria-label="Porcentaje de tareas cumplidas"><span style="width:{{ porcentaje }}%"></span></div>
+        <p class="ls-progreso-txt"><strong>{{ porcentaje }}%</strong> de las tareas está cumplido ({{ cumplidas|length }} de {{ total }}).</p>
+    </div>
+
+    <dl class="ls-stats">
+        <div class="ls-stat ls-stat--ok"><dt>Cumplidas</dt><dd>{{ cumplidas|length }}</dd></div>
+        <div class="ls-stat ls-stat--rev"><dt>En revisión</dt><dd>{{ en_revision|length }}</dd></div>
+        <div class="ls-stat ls-stat--pend"><dt>Pendientes</dt><dd>{{ pendientes|length }}</dd></div>
+    </dl>
+
+    <div class="ls-acciones">
+        <a class="btn btn-primary" href="{% url 'gestion:crear_tarea' %}">+ Nueva tarea</a>
+        <a class="btn btn-ghost" href="{% url 'gestion:mis_tareas' %}">Ver mis tareas</a>
+    </div>
+
+    <section class="ls-panel" aria-labelledby="h-cumplidas">
+        <h2 id="h-cumplidas" class="ls-h2">Cumplidas</h2>
+        {% for t in cumplidas %}
+            <div class="ls-fila">
+                <a href="{% url 'gestion:detalle_tarea' t.pk %}">✔ {{ t.titulo }}</a>
+                <span class="ls-meta">Validada por {{ t.validada_por.get_full_name|default:t.validada_por.username }} · {{ t.validada_en|date:"d/m/Y" }} · {{ t.evidencias.count }} foto(s)</span>
+            </div>
+        {% empty %}<p class="ls-vacio">Sin tareas cumplidas aún.</p>{% endfor %}
+    </section>
+
+    <section class="ls-panel ls-seccion" aria-labelledby="h-revision">
+        <h2 id="h-revision" class="ls-h2">En revisión</h2>
+        {% for t in en_revision %}
+            <div class="ls-fila">
+                <a href="{% url 'gestion:detalle_tarea' t.pk %}">⏳ {{ t.titulo }}</a>
+                <span class="ls-meta">Esperando a {{ t.delegado.get_full_name|default:t.delegado.username }}</span>
+            </div>
+        {% empty %}<p class="ls-vacio">Nada en revisión.</p>{% endfor %}
+    </section>
+
+    <section class="ls-panel ls-seccion" aria-labelledby="h-pend">
+        <h2 id="h-pend" class="ls-h2">Pendientes</h2>
+        {% for t in pendientes %}
+            <div class="ls-fila ls-estado-{{ t.estado }}">
+                <a href="{% url 'gestion:detalle_tarea' t.pk %}">{{ t.titulo }}</a>
+                <span class="ls-meta"><span class="ls-badge">{{ t.get_estado_display }}</span> {{ t.profesional.get_full_name|default:t.profesional.username }} · límite {{ t.fecha_limite|date:"d/m/Y" }}</span>
+            </div>
+        {% empty %}<p class="ls-vacio">Sin pendientes.</p>{% endfor %}
+    </section>
+</section>
+{% endblock %}

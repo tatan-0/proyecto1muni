@@ -34,7 +34,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "gestion.apps.GestionConfig",
+    "storages",
 ]
+
+LOGIN_URL = "gestion:login"
+LOGIN_REDIRECT_URL = "gestion:dashboard"
+LOGOUT_REDIRECT_URL = "gestion:login"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -133,3 +138,29 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_REDIRECT_EXEMPT = [r"^health/$"]
+
+import os
+from pathlib import Path
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = Path(BASE_DIR) / "media"          # solo para desarrollo local
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5 MB
+
+# Si está definido el bucket (producción en AWS), las fotos van a S3.
+# Si no, se guardan en la carpeta media/ local.
+if os.environ.get("AWS_STORAGE_BUCKET_NAME"):
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "bucket_name": os.environ["AWS_STORAGE_BUCKET_NAME"],
+                "region_name": os.environ.get("AWS_S3_REGION_NAME", "us-east-1"),
+                "querystring_auth": True,      # URLs firmadas y temporales
+                "default_acl": None,
+                "file_overwrite": False,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }

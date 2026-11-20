@@ -1,0 +1,62 @@
+{% extends "gestion/base.html" %}
+{% block title %}{{ tarea.titulo }} · SGR La Serena{% endblock %}
+{% block content %}
+<section aria-labelledby="page-title">
+    {% include "gestion/_banner.html" with titulo=tarea.titulo subtitulo=tarea.ubicacion %}
+
+    <div class="ls-panel ls-estado-{{ tarea.estado }}">
+        <div class="flex flex-wrap items-center gap-3">
+            <span class="ls-badge">{{ tarea.get_estado_display }}{% if tarea.cumplida %} ✔ Cumplida{% endif %}</span>
+            <span class="ls-prio ls-prio-{{ tarea.prioridad }}">Prioridad {{ tarea.get_prioridad_display|lower }}</span>
+        </div>
+
+        <ol class="ls-pasos" aria-label="Avance de la tarea">
+            <li class="ls-paso is-done">Asignada</li>
+            <li class="ls-paso {% if tarea.estado == 'en_revision' or tarea.cumplida %}is-done{% elif tarea.estado == 'rechazada' %}is-warn{% endif %}">{% if tarea.estado == 'rechazada' %}Devuelta{% else %}En revisión{% endif %}</li>
+            <li class="ls-paso {% if tarea.cumplida %}is-done{% endif %}">Cumplida</li>
+        </ol>
+
+        <p>{{ tarea.descripcion|linebreaksbr }}</p>
+
+        <dl class="ls-datos">
+            <div><dt>Lugar</dt><dd>{{ tarea.ubicacion|default:"—" }}</dd></div>
+            <div><dt>Fecha límite</dt><dd>{{ tarea.fecha_limite|date:"d/m/Y" }}</dd></div>
+            <div><dt>Profesional</dt><dd>{{ tarea.profesional.get_full_name|default:tarea.profesional.username }}</dd></div>
+            <div><dt>Delegado revisor</dt><dd>{{ tarea.delegado.get_full_name|default:tarea.delegado.username }}</dd></div>
+        </dl>
+
+        {% if tarea.cumplida %}
+            <p class="ls-nota">Validada por <strong>{{ tarea.validada_por.get_full_name|default:tarea.validada_por.username }}</strong> el {{ tarea.validada_en|date:"d/m/Y H:i" }}.</p>
+        {% endif %}
+        {% if tarea.observaciones_revision %}
+            <p class="ls-nota"><strong>Observaciones del delegado:</strong> {{ tarea.observaciones_revision }}</p>
+        {% endif %}
+
+        <div class="ls-acciones" style="margin-top:1.25rem;margin-bottom:0">
+            {% if "profesional" in roles and not tarea.cumplida and tarea.estado != "en_revision" %}
+                <a class="btn btn-primary" href="{% url 'gestion:subir_evidencia' tarea.pk %}">📷 Subir evidencia</a>
+            {% endif %}
+            {% if "delegado" in roles and tarea.estado == "en_revision" %}
+                <a class="btn btn-primary" href="{% url 'gestion:revisar_tarea' tarea.pk %}">Revisar evidencia</a>
+            {% endif %}
+            <a class="btn btn-ghost" href="{% url 'gestion:mis_tareas' %}">Volver a mis tareas</a>
+        </div>
+    </div>
+
+    <section class="ls-seccion" aria-labelledby="ev-titulo">
+        <h2 id="ev-titulo" class="ls-h2">Evidencias</h2>
+        {% if evidencias %}
+            <div class="ls-galeria">
+                {% for ev in evidencias %}
+                    <figure class="ls-polaroid">
+                        <img src="{{ ev.imagen.url }}" alt="Evidencia de {{ tarea.titulo }}" loading="lazy">
+                        <figcaption>{% if ev.descripcion %}{{ ev.descripcion }}<br>{% endif %}{{ ev.subida_por.get_full_name|default:ev.subida_por.username }} · {{ ev.subida_en|date:"d/m/Y H:i" }}</figcaption>
+                    </figure>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="ls-vacio">Aún no hay fotos de evidencia.</p>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

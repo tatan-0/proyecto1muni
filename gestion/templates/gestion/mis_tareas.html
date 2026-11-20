@@ -1,0 +1,43 @@
+{% extends "gestion/base.html" %}
+{% block title %}Mis tareas · SGR La Serena{% endblock %}
+{% block content %}
+<section aria-labelledby="page-title">
+    {% include "gestion/_banner.html" with titulo="Mis tareas" subtitulo="Seguimiento del trabajo territorial: cada tarea se cierra cuando el delegado valida la evidencia." %}
+
+    <dl class="ls-stats">
+        <div class="ls-stat"><dt>En total</dt><dd>{{ total }}</dd></div>
+        <div class="ls-stat ls-stat--pend"><dt>Por hacer</dt><dd>{{ pendientes }}</dd></div>
+        <div class="ls-stat ls-stat--rev"><dt>En revisión</dt><dd>{{ por_revisar }}</dd></div>
+        <div class="ls-stat ls-stat--ok"><dt>Cumplidas</dt><dd>{{ cumplidas }}</dd></div>
+    </dl>
+
+    {% if "coordinador" in roles or "admin" in roles %}
+        <div class="ls-acciones">
+            <a class="btn btn-primary" href="{% url 'gestion:crear_tarea' %}">+ Nueva tarea</a>
+            <a class="btn btn-outline" href="{% url 'gestion:panel_cumplimiento' %}">Panel de cumplimiento</a>
+        </div>
+    {% endif %}
+
+    {% if tareas %}
+        <div class="ls-grid">
+            {% for t in tareas %}
+                <article class="ls-task ls-estado-{{ t.estado }}">
+                    <div class="ls-task-top">
+                        <span class="ls-badge">{{ t.get_estado_display }}{% if t.cumplida %} ✔{% endif %}</span>
+                        <span class="ls-prio ls-prio-{{ t.prioridad }}">Prioridad {{ t.get_prioridad_display|lower }}</span>
+                    </div>
+                    <h3><a href="{% url 'gestion:detalle_tarea' t.pk %}">{{ t.titulo }}</a></h3>
+                    {% if t.ubicacion %}<p class="ls-meta">Lugar: {{ t.ubicacion }}</p>{% endif %}
+                    <p class="ls-meta">Profesional: {{ t.profesional.get_full_name|default:t.profesional.username }}</p>
+                    <div class="ls-task-pie">
+                        <span class="ls-meta">Límite {{ t.fecha_limite|date:"d/m/Y" }}</span>
+                        <a class="btn btn-sm btn-primary" href="{% url 'gestion:detalle_tarea' t.pk %}">Ver tarea</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="ls-vacio">No tienes tareas por ahora. ¡Buen momento para un café frente al mar!</p>
+    {% endif %}
+</section>
+{% endblock %}

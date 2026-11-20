@@ -1,0 +1,28 @@
+{% extends "gestion/base.html" %}
+{% block title %}Nueva tarea · SGR La Serena{% endblock %}
+{% block content %}
+<section aria-labelledby="page-title">
+    {% include "gestion/_banner.html" with titulo="Nueva tarea" subtitulo="Asigna el trabajo a un profesional y elige al delegado que validará la evidencia." %}
+
+    <form method="post" class="ls-panel ls-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div role="alert" class="alert alert-error mb-4">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+        {% endif %}
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+        {% for field in form.visible_fields %}
+            <div class="form-control gap-2">
+                <label for="{{ field.id_for_label }}" class="text-sm font-semibold">{{ field.label }}{% if field.field.required %}<span aria-hidden="true"> *</span><span class="sr-only"> (obligatorio)</span>{% endif %}</label>
+                {{ field }}
+                {% if field.help_text %}<p class="text-sm">{{ field.help_text }}</p>{% endif %}
+                {% if field.errors %}<div class="space-y-1 text-sm text-error" role="alert">{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+            </div>
+        {% endfor %}
+        <p class="text-sm"><span aria-hidden="true">*</span> Campo obligatorio.</p>
+        <div class="ls-form-pie">
+            <a class="btn btn-ghost" href="{% url 'gestion:mis_tareas' %}">Cancelar</a>
+            <button class="btn btn-primary" type="submit">Crear y asignar</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

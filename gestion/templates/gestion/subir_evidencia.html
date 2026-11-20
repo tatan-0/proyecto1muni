@@ -1,0 +1,26 @@
+{% extends "gestion/base.html" %}
+{% block title %}Subir evidencia · SGR La Serena{% endblock %}
+{% block content %}
+<section aria-labelledby="page-title">
+    {% include "gestion/_banner.html" with titulo="Subir evidencia" subtitulo=tarea.titulo %}
+
+    <form method="post" enctype="multipart/form-data" class="ls-panel ls-form">
+        {% csrf_token %}
+        <p class="mb-4">Toma una foto clara del trabajo terminado (JPG, PNG o WebP, máximo 5 MB). Al enviarla, el delegado la revisará.</p>
+        {% if form.non_field_errors %}
+            <div role="alert" class="alert alert-error mb-4">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+        {% endif %}
+        {% for field in form.visible_fields %}
+            <div class="form-control gap-2">
+                <label for="{{ field.id_for_label }}" class="text-sm font-semibold">{{ field.label }}{% if field.field.required %}<span aria-hidden="true"> *</span><span class="sr-only"> (obligatorio)</span>{% endif %}</label>
+                {{ field }}
+                {% if field.errors %}<div class="space-y-1 text-sm text-error" role="alert">{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+            </div>
+        {% endfor %}
+        <div class="ls-form-pie">
+            <a class="btn btn-ghost" href="{% url 'gestion:detalle_tarea' tarea.pk %}">Cancelar</a>
+            <button class="btn btn-primary" type="submit">Enviar al delegado</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

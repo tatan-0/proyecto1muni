@@ -6,6 +6,70 @@ from django.db import models
 from django.db.models import Sum
 
 
+class Tarea(models.Model):
+    class Estado(models.TextChoices):
+        PENDIENTE = "pendiente", "Pendiente"
+        EN_PROGRESO = "en_progreso", "En progreso"
+        EN_REVISION = "en_revision", "En revisión"
+        APROBADA = "aprobada", "Aprobada"
+        RECHAZADA = "rechazada", "Rechazada"
+
+    class Prioridad(models.TextChoices):
+        ALTA = "alta", "Alta"
+        MEDIA = "media", "Media"
+        BAJA = "baja", "Baja"
+
+    titulo = models.CharField(max_length=200)
+    descripcion = models.TextField()
+    ubicacion = models.CharField("Lugar o sector", max_length=200, blank=True)
+    prioridad = models.CharField(max_length=10, choices=Prioridad.choices, default=Prioridad.MEDIA)
+    fecha_limite = models.DateField()
+    estado = models.CharField(max_length=15, choices=Estado.choices, default=Estado.PENDIENTE)
+
+    creada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="tareas_creadas"
+    )
+    profesional = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="tareas_asignadas",
+        limit_choices_to={"groups__name": "PROFESIONAL"},
+    )
+    delegado = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="tareas_a_revisar",
+        limit_choices_to={"groups__name": "DELEGADO"},
+    )
+    creada_en = models.DateTimeField(auto_now_add=True)
+
+    cumplida = models.BooleanField(default=False)
+    validada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="tareas_validadas",
+    )
+    validada_en = models.DateTimeField(null=True, blank=True)
+    observaciones_revision = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["fecha_limite", "-creada_en"]
+
+    def __str__(self):
+        return self.titulo
+
+
+class Evidencia(models.Model):
+    class Tipo(models.TextChoices):
+        EJECUCION = "ejecucion", "Evidencia de ejecución"
+        VERIFICACION = "verificacion", "Verificación del delegado"
+
+    tarea = models.ForeignKey(Tarea, on_delete=models.CASCADE, related_name="evidencias")
+    imagen = models.ImageField(upload_to="evidencias/%Y/%m/")
+    descripcion = models.CharField(max_length=200, blank=True)
+    tipo = models.CharField(max_length=15, choices=Tipo.choices, default=Tipo.EJECUCION)
+    subida_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    subida_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-subida_en"]
+
+
 class Delegacion(models.Model):
     nombre = models.CharField("nombre", max_length=120, unique=True)
     descripcion_territorial = models.TextField("descripción territorial", blank=True)

@@ -1,5 +1,5 @@
-from gestion.permissions import usuario_es_admin
+from gestion.permissions import roles_de, usuario_es_admin
 
 
 def sgr_roles(request):
-    return {"sgr_es_admin": usuario_es_admin(request.user)}
+    return {"sgr_es_admin": usuario_es_admin(request.user), "sgr_roles": roles_de(request.user)}

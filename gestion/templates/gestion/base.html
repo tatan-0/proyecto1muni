@@ -7,6 +7,7 @@
     <meta name="color-scheme" content="light">
     <title>{% block title %}SGR La Serena{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'gestion/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'gestion/css/serena.css' %}">
 </head>
 <body class="min-h-screen bg-base-200 text-base-content">
     <svg class="sr-only" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -52,6 +53,11 @@
                     <li><a href="{% url 'gestion:tubo' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-calendar"/></svg>Agenda de compromisos</a></li>
                     <li><a href="{% url 'gestion:semaforo' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-target"/></svg>Metas e indicadores</a></li>
                     <li><a href="{% url 'gestion:resumen' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-map"/></svg>Resumen territorial</a></li>
+                    <li class="menu-title hidden mt-5 px-4 pb-3 text-secondary-content/65 lg:block">Tareas y evidencias</li>
+                    <li><a href="{% url 'gestion:mis_tareas' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-calendar"/></svg>Mis tareas</a></li>
+                    {% if 'coordinador' in sgr_roles or 'admin' in sgr_roles %}
+                        <li><a href="{% url 'gestion:panel_cumplimiento' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-target"/></svg>Panel de cumplimiento</a></li>
+                    {% endif %}
                     {% if sgr_es_admin %}
                         <li class="menu-title hidden mt-5 px-4 pb-3 text-secondary-content/65 lg:block">Administración</li>
                         <li><a href="{% url 'maestros:delegaciones-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-map"/></svg>Delegaciones</a></li>

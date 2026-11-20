@@ -1,0 +1,133 @@
+/* Identidad visual La Serena: ciudad de los campanarios, el Faro Monumental,
+   las arcadas coloniales y el Pacífico. Solo clases con prefijo ls-. */
+:root {
+  --ls-burdeos: #800000;
+  --ls-burdeos-osc: #4a0d14;
+  --ls-oro: #e0a82e;
+  --ls-mar: #1f6f8b;
+  --ls-mar-claro: #dcecf1;
+  --ls-arena: #f3e9d8;
+  --ls-arena-osc: #d9c7a3;
+  --ls-cal: #fbf8f2;
+  --ls-teja: #b5532f;
+  --ls-valle: #3b7d4f;
+  --ls-tinta: #2c3e50;
+}
+
+/* ---------- Banner con siluetas ---------- */
+.ls-banner {
+  position: relative; overflow: hidden; color: #fff;
+  padding: 1.75rem 1.5rem 6rem; border-radius: 1rem 1rem 0 0;
+  background: linear-gradient(160deg, var(--ls-burdeos) 0%, var(--ls-burdeos-osc) 62%, var(--ls-tinta) 100%);
+}
+.ls-banner::before { /* sol del Elqui */
+  content: ""; position: absolute; right: 8%; top: 1.25rem; width: 5.5rem; height: 5.5rem; border-radius: 50%;
+  background: radial-gradient(circle, rgba(224,168,46,.95) 0 38%, rgba(224,168,46,.25) 39% 62%, transparent 63%);
+}
+.ls-banner > * { position: relative; }
+.ls-eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ls-oro); }
+.ls-title { margin-top: .35rem; font-size: 2rem; font-weight: 800; line-height: 1.1; }
+.ls-sub { margin-top: .6rem; max-width: 38rem; color: rgba(255,255,255,.82); }
+.ls-banner svg { position: absolute; left: 0; bottom: -1px; width: 100%; height: 5.5rem; }
+.ls-arcos { /* friso de arcadas */
+  height: 14px; margin-bottom: 1.75rem; border-radius: 0 0 1rem 1rem;
+  background:
+    radial-gradient(circle at 50% 100%, var(--ls-arena) 0 5px, var(--ls-teja) 5.5px 7px, transparent 7.5px) 0 0 / 22px 14px repeat-x,
+    var(--ls-teja);
+  border-bottom: 4px solid var(--ls-oro);
+}
+
+/* ---------- Contenedores ---------- */
+.ls-panel {
+  background: var(--ls-cal); border: 1px solid var(--ls-arena-osc); border-top: 4px solid var(--ls-mar);
+  border-radius: .9rem; padding: 1.25rem; box-shadow: 0 2px 8px rgba(74,13,20,.07);
+}
+.ls-h2 { font-size: 1.2rem; font-weight: 700; color: var(--ls-burdeos); display: flex; align-items: center; gap: .6rem; margin-bottom: .9rem; }
+.ls-h2::before { content: ""; width: .55rem; height: 1.2rem; border-radius: .2rem; background: var(--ls-oro); }
+.ls-vacio { padding: 1.25rem; text-align: center; color: #6b6b6b; background: var(--ls-arena); border-radius: .75rem; border: 1px dashed var(--ls-arena-osc); }
+.ls-acciones { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; }
+
+/* ---------- Indicadores ---------- */
+.ls-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: .85rem; margin-bottom: 1.75rem; }
+.ls-stat { background: var(--ls-cal); border: 1px solid var(--ls-arena-osc); border-left: 6px solid var(--ls-burdeos); border-radius: .75rem; padding: .85rem 1rem; }
+.ls-stat dt { font-size: .8rem; font-weight: 600; color: #555; }
+.ls-stat dd { font-size: 2rem; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--ls-tinta); }
+.ls-stat--pend { border-left-color: var(--ls-teja); }
+.ls-stat--rev  { border-left-color: var(--ls-mar); }
+.ls-stat--ok   { border-left-color: var(--ls-valle); }
+
+/* ---------- Estados y prioridad ---------- */
+.ls-badge { display: inline-block; padding: .15rem .65rem; border-radius: 999px; font-size: .75rem; font-weight: 700; background: var(--ls-arena); color: var(--ls-teja); border: 1px solid var(--ls-arena-osc); }
+.ls-estado-en_progreso .ls-badge { background: var(--ls-mar-claro); color: var(--ls-mar); border-color: #b6d4de; }
+.ls-estado-en_revision .ls-badge { background: var(--ls-mar); color: #fff; border-color: var(--ls-mar); }
+.ls-estado-aprobada .ls-badge { background: var(--ls-valle); color: #fff; border-color: var(--ls-valle); }
+.ls-estado-rechazada .ls-badge { background: var(--ls-burdeos); color: #fff; border-color: var(--ls-burdeos); }
+.ls-prio { font-size: .75rem; font-weight: 700; display: inline-flex; align-items: center; gap: .35rem; color: #555; }
+.ls-prio::before { content: ""; width: .6rem; height: .6rem; border-radius: 50%; background: var(--ls-oro); }
+.ls-prio-alta::before { background: var(--ls-burdeos); }
+.ls-prio-baja::before { background: var(--ls-valle); }
+
+/* ---------- Tarjetas de tarea ---------- */
+.ls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr)); gap: 1rem; }
+.ls-task {
+  display: flex; flex-direction: column; gap: .5rem; background: var(--ls-cal);
+  border: 1px solid var(--ls-arena-osc); border-top: 5px solid var(--ls-teja); border-radius: .35rem .35rem .8rem .8rem;
+  padding: 1rem; box-shadow: 0 2px 6px rgba(74,13,20,.07);
+}
+.ls-task.ls-estado-en_progreso { border-top-color: var(--ls-mar); }
+.ls-task.ls-estado-en_revision { border-top-color: var(--ls-mar); }
+.ls-task.ls-estado-aprobada { border-top-color: var(--ls-valle); }
+.ls-task.ls-estado-rechazada { border-top-color: var(--ls-burdeos); }
+.ls-task-top { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.ls-task h3 { font-size: 1.05rem; font-weight: 700; color: var(--ls-tinta); }
+.ls-task h3 a:hover { color: var(--ls-burdeos); text-decoration: underline; }
+.ls-meta { font-size: .85rem; color: #5a5a5a; }
+.ls-task-pie { margin-top: auto; padding-top: .6rem; border-top: 1px dashed var(--ls-arena-osc); display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+
+/* ---------- Avance de la tarea (campanarios) ---------- */
+.ls-pasos { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin: 1.25rem 0; list-style: none; padding: 0; }
+.ls-paso { text-align: center; font-size: .8rem; font-weight: 600; color: #8a8a8a; position: relative; padding-top: 2.2rem; }
+.ls-paso::before { /* campanario */
+  content: ""; position: absolute; top: 0; left: 50%; width: 1.5rem; height: 1.9rem; transform: translateX(-50%);
+  background: var(--ls-arena-osc); clip-path: polygon(50% 0, 100% 28%, 100% 100%, 0 100%, 0 28%);
+}
+.ls-paso.is-done { color: var(--ls-tinta); }
+.ls-paso.is-done::before { background: var(--ls-valle); }
+.ls-paso.is-warn { color: var(--ls-burdeos); }
+.ls-paso.is-warn::before { background: var(--ls-burdeos); }
+
+/* ---------- Datos de la tarea ---------- */
+.ls-datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .75rem 1.5rem; margin-top: 1rem; }
+.ls-datos dt { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ls-mar); }
+.ls-datos dd { font-weight: 600; color: var(--ls-tinta); }
+.ls-nota { margin-top: 1rem; padding: .85rem 1rem; border-left: 5px solid var(--ls-oro); background: var(--ls-arena); border-radius: 0 .6rem .6rem 0; }
+
+/* ---------- Fotos de evidencia (polaroid) ---------- */
+.ls-galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 1.4rem; }
+.ls-polaroid { background: #fff; padding: .6rem .6rem 1rem; box-shadow: 0 3px 10px rgba(0,0,0,.18); transform: rotate(-1.2deg); border-radius: .15rem; }
+.ls-polaroid:nth-child(even) { transform: rotate(1.4deg); }
+.ls-polaroid img { display: block; width: 100%; height: auto; background: var(--ls-arena); }
+.ls-polaroid figcaption { margin-top: .55rem; font-size: .8rem; color: #555; }
+.ls-galeria--grande { grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); }
+
+/* ---------- Progreso del panel ---------- */
+.ls-progreso { height: .9rem; border-radius: 999px; background: var(--ls-mar-claro); overflow: hidden; border: 1px solid #b6d4de; }
+.ls-progreso > span { display: block; height: 100%; background: linear-gradient(90deg, var(--ls-valle), #5aa36d); }
+.ls-progreso-txt { margin-top: .35rem; font-size: .85rem; color: #555; }
+.ls-fila { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .35rem 1rem; padding: .7rem 0; border-bottom: 1px dashed var(--ls-arena-osc); }
+.ls-fila:last-child { border-bottom: 0; }
+.ls-fila a { font-weight: 700; color: var(--ls-burdeos); }
+.ls-fila a:hover { text-decoration: underline; }
+.ls-seccion { margin-top: 1.5rem; }
+
+/* ---------- Formularios ---------- */
+.ls-form { max-width: 46rem; }
+.ls-form .form-control { margin-bottom: 1.1rem; }
+.ls-form input[type="file"] { padding: 1rem; width: 100%; border: 2px dashed var(--ls-mar); border-radius: .75rem; background: var(--ls-mar-claro); }
+.ls-form input:focus, .ls-form select:focus, .ls-form textarea:focus { outline: 2px solid var(--ls-oro); outline-offset: 2px; }
+.ls-form-pie { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; padding-top: 1rem; border-top: 1px solid var(--ls-arena-osc); }
+
+@media (max-width: 40rem) {
+  .ls-title { font-size: 1.6rem; }
+  .ls-banner::before { width: 3.5rem; height: 3.5rem; }
+}
