@@ -3,17 +3,31 @@ from django.urls import reverse
 
 from gestion.permissions import roles_de, usuario_tiene_acceso_sgr
 
+# Página de inicio según el rol. Si tiene varios roles, gana el primero de esta lista.
+DESTINO_POR_ROL = (
+    ("admin", "gestion:dashboard"),
+    ("coordinador", "gestion:panel_cumplimiento"),
+    ("delegado", "gestion:mis_tareas"),
+    ("profesional", "gestion:mis_tareas"),
+)
+
+
+def destino_inicial(user):
+    roles = roles_de(user)
+    for rol, nombre_url in DESTINO_POR_ROL:
+        if rol in roles:
+            return reverse(nombre_url)
+    if usuario_tiene_acceso_sgr(user):
+        return reverse("gestion:dashboard")
+    return reverse("gestion:mis_tareas")
+
 
 class LoginPorRol(LoginView):
     template_name = "registration/login.html"
 
-    def get_default_redirect_url(self):
-        user = self.request.user
-        roles = roles_de(user)
-        # Coordinadores y profesionales no tienen acceso al dashboard del SGR.
-        if roles & {"coordinador", "profesional"} or not usuario_tiene_acceso_sgr(user):
-            return reverse("gestion:mis_tareas")
-        return reverse("gestion:dashboard")
+    def get_success_url(self):
+        # Siempre según el rol: se ignora la página anterior (?next=).
+        return destino_inicial(self.request.user)
 
 
 login_view = LoginPorRol.as_view()
