@@ -47,12 +47,14 @@
         {% if request.user.is_authenticated %}
             <nav class="municipal-nav bg-secondary text-secondary-content shadow-inner" aria-label="Navegación principal">
                 <ul class="menu menu-horizontal w-full flex-nowrap gap-1 overflow-x-auto p-2 text-sm lg:menu-vertical lg:sticky lg:top-0 lg:min-h-[calc(100vh-5rem)] lg:flex-nowrap lg:overflow-visible lg:p-4">
+                    {% if 'admin' in sgr_roles or 'delegado' in sgr_roles %}
                     <li class="menu-title hidden px-4 pb-3 text-secondary-content/65 lg:block">Módulos del sistema</li>
                     <li><a href="{% url 'gestion:dashboard' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-overview"/></svg>Resumen de gestión</a></li>
                     <li><a href="{% url 'gestion:ficha' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-person"/></svg>Ficha personal</a></li>
                     <li><a href="{% url 'gestion:tubo' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-calendar"/></svg>Agenda de compromisos</a></li>
                     <li><a href="{% url 'gestion:semaforo' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-target"/></svg>Metas e indicadores</a></li>
                     <li><a href="{% url 'gestion:resumen' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-map"/></svg>Resumen territorial</a></li>
+                    {% endif %}
                     <li class="menu-title hidden mt-5 px-4 pb-3 text-secondary-content/65 lg:block">Tareas y evidencias</li>
                     <li><a href="{% url 'gestion:mis_tareas' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-calendar"/></svg>Mis tareas</a></li>
                     {% if 'coordinador' in sgr_roles or 'admin' in sgr_roles %}
