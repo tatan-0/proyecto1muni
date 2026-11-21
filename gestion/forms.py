@@ -109,6 +109,15 @@ class TareaForm(SGRModelForm):
             is_active=True,
         ).distinct()
 
+    def clean(self):
+        data = super().clean()
+        sector, prof = data.get("sector"), data.get("profesional")
+        if sector and prof:
+            perfil = getattr(prof, "perfil_sector", None)
+            if perfil and perfil.sector_id and perfil.sector_id != sector.pk:
+                self.add_error("profesional", f"Este profesional pertenece a {perfil.sector}. Elige un profesional de {sector}.")
+        return data
+
 
 class EvidenciaForm(SGRModelForm):
     class Meta:

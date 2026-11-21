@@ -5,7 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 
 from ..forms_usuarios import (
-    NOMBRES_ROL, ClaveForm, UsuarioCrearForm, UsuarioEditarForm, asignar_rol,
+    NOMBRES_ROL, ClaveForm, UsuarioCrearForm, UsuarioEditarForm, asignar_rol, guardar_sector,
 )
 from ..permissions import roles_de
 
@@ -26,9 +26,11 @@ def _rol_de(user):
 @login_required
 def usuarios_lista(request):
     _solo_admin(request.user)
-    usuarios = list(User.objects.order_by("username"))
+    usuarios = list(User.objects.select_related("perfil_sector__sector").order_by("username"))
     for u in usuarios:
         u.rol = _rol_de(u) or ("SUPERUSUARIO" if u.is_superuser else "Sin rol")
+        perfil = getattr(u, "perfil_sector", None)
+        u.sector_txt = perfil.sector if perfil and perfil.sector_id else None
     return render(request, "gestion/usuarios_lista.html", {"usuarios": usuarios})
 
 
@@ -50,6 +52,7 @@ def usuario_editar(request, pk):
     inicial = {
         "first_name": user.first_name, "last_name": user.last_name, "email": user.email,
         "rol": _rol_de(user) or "PROFESIONAL", "is_active": user.is_active,
+        "sector": getattr(getattr(user, "perfil_sector", None), "sector_id", None),
     }
     form = UsuarioEditarForm(request.POST or None, initial=inicial)
     if request.method == "POST" and form.is_valid():
@@ -61,6 +64,7 @@ def usuario_editar(request, pk):
             user.is_active = d["is_active"]
             user.save()
             asignar_rol(user, d["rol"])
+            guardar_sector(user, d["sector"])
             messages.success(request, f"Usuario {user.username} actualizado.")
             return redirect("gestion:usuarios_lista")
     return render(request, "gestion/usuario_form.html", {

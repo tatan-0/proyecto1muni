@@ -177,3 +177,18 @@ class Servicio(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
+class PerfilUsuario(models.Model):
+    """Sector (delegación) al que pertenece una cuenta; sirve para asignar profesionales por sector."""
+
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="perfil_sector",
+    )
+    sector = models.ForeignKey(
+        "Delegacion", null=True, blank=True, on_delete=models.SET_NULL,
+        related_name="usuarios_asignados", verbose_name="sector",
+    )
+
+    def __str__(self):
+        return f"{self.usuario} · {self.sector or 'sin sector'}"

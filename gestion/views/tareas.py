@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from ..forms import EvidenciaForm, TareaForm
-from ..models import Tarea
+from ..models import PerfilUsuario, Tarea
 from ..permissions import roles_de
 
 
@@ -59,8 +59,12 @@ def crear_tarea(request):
         .values_list("sector_id", "ubicacion").distinct().order_by("ubicacion")
     ):
         calles.setdefault(str(sector_id), []).append(calle)
+    por_sector = {}
+    for usuario_id, sector_id in PerfilUsuario.objects.exclude(sector__isnull=True).values_list("usuario_id", "sector_id"):
+        por_sector.setdefault(str(sector_id), []).append(usuario_id)
     return render(request, "gestion/tarea_form.html", {
         "form": form, "roles": roles_de(request.user), "calles_por_sector": calles,
+        "profesionales_por_sector": por_sector,
     })
 
 

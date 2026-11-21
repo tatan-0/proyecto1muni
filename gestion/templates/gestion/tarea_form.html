@@ -27,6 +27,7 @@
     </form>
 </section>
 {{ calles_por_sector|json_script:"calles-data" }}
+{{ profesionales_por_sector|json_script:"prof-data" }}
 <script>
 (function () {
     var calles = JSON.parse(document.getElementById("calles-data").textContent);
@@ -38,8 +39,22 @@
             var o = document.createElement("option"); o.value = c; lista.appendChild(o);
         });
     }
-    sector.addEventListener("change", cargar);
+    var porSector = JSON.parse(document.getElementById("prof-data").textContent);
+    var prof = document.getElementById("id_profesional");
+    var asignado = {};
+    Object.keys(porSector).forEach(function (s) { porSector[s].forEach(function (u) { asignado[u] = s; }); });
+    function filtrarProfesionales() {
+        Array.prototype.forEach.call(prof.options, function (o) {
+            if (!o.value) return;
+            var s = asignado[o.value];
+            var ok = !sector.value || !s || s === sector.value;
+            o.hidden = !ok; o.disabled = !ok;
+        });
+        if (prof.selectedOptions[0] && prof.selectedOptions[0].disabled) prof.value = "";
+    }
+    sector.addEventListener("change", function () { cargar(); filtrarProfesionales(); });
     cargar();
+    filtrarProfesionales();
 })();
 </script>
 {% endblock %}

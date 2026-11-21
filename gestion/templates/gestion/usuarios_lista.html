@@ -8,13 +8,14 @@
     </div>
     <div class="ls-panel" style="overflow-x:auto">
         <table class="table w-full">
-            <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Estado</th><th></th></tr></thead>
+            <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Sector</th><th>Estado</th><th></th></tr></thead>
             <tbody>
             {% for u in usuarios %}
                 <tr>
                     <td><strong>{{ u.username }}</strong></td>
                     <td>{{ u.get_full_name|default:"—" }}</td>
                     <td>{{ u.rol }}</td>
+                    <td>{{ u.sector_txt|default:"—" }}</td>
                     <td>{% if u.is_active %}Activa{% else %}Desactivada{% endif %}</td>
                     <td>
                         <a href="{% url 'gestion:usuario_editar' u.pk %}">Editar</a> ·
