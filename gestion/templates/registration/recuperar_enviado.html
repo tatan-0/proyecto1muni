@@ -1,0 +1,11 @@
+{% extends "registration/cuenta_base.html" %}
+
+{% block title %}Revisa tu correo{% endblock %}
+
+{% block contenido %}
+    <span class="badge badge-primary badge-soft mb-2 w-fit">Solicitud recibida</span>
+    <h2 class="card-title mt-1 text-3xl">Revisa tu correo</h2>
+    <p class="text-base-content/70">Si existe una cuenta con ese correo, te enviamos un enlace para elegir una nueva contraseña. El enlace vence en 3 días.</p>
+    <p class="mt-4 text-sm text-base-content/70">Si no lo ves, revisa la carpeta de spam.</p>
+    <a href="{% url 'gestion:login' %}" class="btn btn-primary btn-block mt-6">Volver a iniciar sesión</a>
+{% endblock %}

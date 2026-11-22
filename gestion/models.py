@@ -233,6 +233,7 @@ class PerfilUsuario(models.Model):
         "Delegacion", null=True, blank=True, on_delete=models.SET_NULL,
         related_name="usuarios_asignados", verbose_name="sector",
     )
+    debe_cambiar_clave = models.BooleanField("debe cambiar la contraseña", default=False)
 
     def __str__(self):
         return f"{self.usuario} · {self.sector or 'sin sector'}"

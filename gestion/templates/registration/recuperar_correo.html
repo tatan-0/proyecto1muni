@@ -1,0 +1,8 @@
+{% autoescape off %}Recibimos una solicitud para restablecer la contraseña de tu cuenta del SGR de la Municipalidad de La Serena.
+
+Para elegir una nueva contraseña, abre este enlace:
+{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+Tu nombre de usuario es: {{ user.get_username }}
+
+Si no pediste este cambio, ignora este mensaje: tu contraseña no se modificará.{% endautoescape %}

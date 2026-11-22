@@ -1,0 +1,8 @@
+{% extends "registration/cuenta_base.html" %}
+{% block title %}Contraseña actualizada{% endblock %}
+{% block contenido %}
+<span class="badge badge-primary badge-soft mb-2 w-fit">Listo</span>
+<h2 class="card-title mt-1 text-3xl">Contraseña actualizada</h2>
+<p class="text-base-content/70">Ya puedes iniciar sesión con tu nueva contraseña.</p>
+<a href="{% url 'gestion:login' %}" class="btn btn-primary btn-block mt-6">Iniciar sesión</a>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "registration/cuenta_base.html" %}
+{% block title %}Cambiar contraseña{% endblock %}
+{% block lema %}Protege tu cuenta.{% endblock %}
+{% block sublema %}Antes de continuar, elige una contraseña personal que solo tú conozcas.{% endblock %}
+{% block contenido %}
+<span class="badge badge-primary badge-soft mb-2 w-fit">Cambio obligatorio</span>
+<h2 class="card-title mt-1 text-3xl">Cambia tu contraseña</h2>
+<p class="text-base-content/70">Tu cuenta tiene una contraseña temporal. Debes reemplazarla para usar el sistema.</p>
+
+<form method="post" class="mt-6 space-y-5">
+    {% csrf_token %}
+    <div class="form-control gap-2">
+        <label for="id_old_password" class="label-text font-medium">Contraseña actual (la temporal)</label>
+        <input id="id_old_password" name="old_password" type="password" autocomplete="current-password" required autofocus class="input w-full">
+        {% if form.old_password.errors %}<div class="text-sm text-error">{{ form.old_password.errors }}</div>{% endif %}
+    </div>
+    <div class="form-control gap-2">
+        <label for="id_new_password1" class="label-text font-medium">Contraseña nueva</label>
+        <input id="id_new_password1" name="new_password1" type="password" autocomplete="new-password" required class="input w-full">
+        {% if form.new_password1.errors %}<div class="text-sm text-error">{{ form.new_password1.errors }}</div>{% endif %}
+        <div class="text-xs text-base-content/60">{{ form.new_password1.help_text }}</div>
+    </div>
+    <div class="form-control gap-2">
+        <label for="id_new_password2" class="label-text font-medium">Repite la contraseña nueva</label>
+        <input id="id_new_password2" name="new_password2" type="password" autocomplete="new-password" required class="input w-full">
+        {% if form.new_password2.errors %}<div class="text-sm text-error">{{ form.new_password2.errors }}</div>{% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Guardar y continuar</button>
+</form>
+
+<form method="post" action="{% url 'gestion:logout' %}" class="mt-4">
+    {% csrf_token %}
+    <button type="submit" class="link link-primary text-sm">Cerrar sesión</button>
+</form>
+{% endblock %}
