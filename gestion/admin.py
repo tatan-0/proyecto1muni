@@ -42,9 +42,9 @@ class ServicioAdmin(admin.ModelAdmin):
 
 @admin.register(OrganizacionComunitaria)
 class OrganizacionComunitariaAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "tipo", "delegacion", "activo")
+    list_display = ("nombre", "tipo", "delegacion", "socios_activos", "numero_registro_pj", "activo")
     list_filter = ("tipo", "delegacion", "activo")
-    search_fields = ("nombre", "descripcion")
+    search_fields = ("nombre", "descripcion", "domicilio_legal", "numero_registro_pj")
     list_select_related = ("delegacion",)
 
 

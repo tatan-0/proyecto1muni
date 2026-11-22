@@ -38,6 +38,24 @@ La configuración local usa SQLite y valores de desarrollo. Para ejecutar en pro
 
 Para usar MySQL, definir `DB_ENGINE=mysql`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST` y `DB_PORT`. No guardar secretos ni credenciales en el repositorio.
 
+## Cargar las organizaciones desde el Excel
+
+La base de juntas de vecinos y organizaciones está en `datos/base_datos_JJVV_sin_verificar.xlsx` (2.709 filas, sin verificar). Se carga en la tabla de organizaciones comunitarias con:
+
+```powershell
+python manage.py migrate
+python manage.py importar_organizaciones datos\base_datos_JJVV_sin_verificar.xlsx
+```
+
+El script `iniciar_sgr_local.ps1` ya ejecuta estos pasos si el Excel está en `datos/`.
+
+- **Es repetible**: una organización que ya existe (mismo nombre y delegación) se omite, así que volver a ejecutarlo no duplica nada ni pisa lo que se editó en el sistema. Con `--actualizar` se refrescan sus datos del Excel (domicilio, socios, fechas y registros; no cambia tipo, descripción ni estado).
+- **`--simular`** muestra el resumen sin guardar nada.
+- **Delegaciones**: `CIAS`, `CENTRO`, `PAMPA`, `RURAL`, `ANTENA` y `AV DEL MAR` se asignan a las delegaciones del sistema. Las organizaciones de `ALFALFARES` y las que no tienen territorio quedan sin delegación.
+- **Tipo**: el Excel no lo trae, por eso todas quedan como "Sin clasificar" hasta que se edite cada una.
+- **Datos dudosos** (fechas del año 1900 o futuras, "6 CLUBES" en la columna de socios, registros como `352-BIS`) no se inventan ni se descartan en silencio: el campo queda vacío o con el texto original y el motivo se anota en "observaciones de la carga de datos" de cada organización.
+- En producción, ejecuta `migrate` e `importar_organizaciones` una sola vez con las variables de MySQL definidas.
+
 ## Pruebas
 
 ```powershell

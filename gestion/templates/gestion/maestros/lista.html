@@ -211,7 +211,7 @@
                                 {% elif object.area %}{{ object.area }}
                                 {% elif object.usuario %}{{ object.cargo }} · {{ object.delegacion }}
                                 {% elif object.meta_trimestral %}{{ object.ponderador }}% · meta {{ object.meta_trimestral }} {{ object.unidad_medida }}
-                                {% elif object.tipo %}{{ object.get_tipo_display }}{% if object.delegacion %} · {{ object.delegacion }}{% endif %}
+                                {% elif object.tipo %}{{ object.get_tipo_display }}{% if object.delegacion %} · {{ object.delegacion }}{% endif %}{% if object.domicilio_legal %}<p class="mt-1 text-sm text-base-content/70">{{ object.domicilio_legal }}</p>{% endif %}{% if object.socios_activos or object.numero_registro_pj %}<p class="text-sm text-base-content/70">{% if object.socios_activos %}{{ object.socios_activos }} socio{{ object.socios_activos|pluralize }} activo{{ object.socios_activos|pluralize }}{% endif %}{% if object.socios_activos and object.numero_registro_pj %} · {% endif %}{% if object.numero_registro_pj %}Reg. P.J. Nº {{ object.numero_registro_pj }}{% endif %}</p>{% endif %}
                                 {% elif object.descripcion %}{{ object.descripcion }}
                                 {% else %}<span class="text-base-content/50">Sin detalle</span>{% endif %}
                             </td>

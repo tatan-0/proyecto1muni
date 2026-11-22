@@ -24,6 +24,12 @@ Invoke-SgrPython -PythonArguments @("manage.py", "migrate")
 Invoke-SgrPython -PythonArguments @("manage.py", "collectstatic", "--noinput")
 Invoke-SgrPython -PythonArguments @("manage.py", "load_demo_data")
 
+$excelOrganizaciones = Join-Path $PSScriptRoot "datos\base_datos_JJVV_sin_verificar.xlsx"
+if (Test-Path -LiteralPath $excelOrganizaciones) {
+    # No duplica ni pisa nada: solo agrega las organizaciones que aún no están en la base.
+    Invoke-SgrPython -PythonArguments @("manage.py", "importar_organizaciones", $excelOrganizaciones)
+}
+
 $hasAdmin = & $pythonPath manage.py shell -c "from django.contrib.auth import get_user_model; print(get_user_model().objects.filter(is_superuser=True).exists())"
 if ($LASTEXITCODE -ne 0) { throw "No se pudo comprobar la cuenta administradora." }
 if (($hasAdmin | Out-String).Trim() -notmatch "True$") {

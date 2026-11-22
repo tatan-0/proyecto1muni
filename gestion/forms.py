@@ -87,7 +87,25 @@ class ServicioForm(SGRModelForm):
 class OrganizacionComunitariaForm(SGRModelForm):
     class Meta:
         model = OrganizacionComunitaria
-        fields = ("nombre", "tipo", "descripcion", "delegacion", "activo")
+        fields = (
+            "nombre",
+            "tipo",
+            "descripcion",
+            "delegacion",
+            "domicilio_legal",
+            "socios_activos",
+            "fecha_constitucion",
+            "numero_registro_pj",
+            "fecha_inscripcion_registro",
+            "numero_registro_directiva",
+            "observaciones_origen",
+            "activo",
+        )
+        widgets = {
+            "fecha_constitucion": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+            "fecha_inscripcion_registro": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+            "observaciones_origen": forms.Textarea(attrs={"rows": 3}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

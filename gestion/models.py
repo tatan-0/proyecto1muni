@@ -116,6 +116,7 @@ class OrganizacionComunitaria(models.Model):
         DEPORTIVA = "deportiva", "Organización deportiva"
         CULTURAL_JUVENIL = "cultural_juvenil", "Centro cultural, de madres o agrupación juvenil"
         COMITE = "comite", "Comité vecinal, de allegados o de seguridad"
+        SIN_CLASIFICAR = "sin_clasificar", "Sin clasificar"
 
     nombre = models.CharField("nombre", max_length=160)
     tipo = models.CharField("tipo", max_length=24, choices=Tipo.choices)
@@ -128,6 +129,13 @@ class OrganizacionComunitaria(models.Model):
         null=True,
         blank=True,
     )
+    domicilio_legal = models.CharField("domicilio legal", max_length=200, blank=True)
+    socios_activos = models.PositiveIntegerField("socios activos", null=True, blank=True)
+    fecha_constitucion = models.DateField("fecha de constitución", null=True, blank=True)
+    numero_registro_pj = models.CharField("Nº de registro de personalidad jurídica", max_length=40, blank=True)
+    fecha_inscripcion_registro = models.DateField("fecha de inscripción en el registro", null=True, blank=True)
+    numero_registro_directiva = models.PositiveIntegerField("Nº de registro de directiva", null=True, blank=True)
+    observaciones_origen = models.TextField("observaciones de la carga de datos", blank=True)
     activo = models.BooleanField("activa", default=True)
 
     class Meta:
