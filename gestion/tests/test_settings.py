@@ -8,7 +8,7 @@ class SettingsEnvironmentTests(unittest.TestCase):
     def run_settings_import(self, **overrides):
         environment = os.environ.copy()
         keys = (
-            "DJANGO_SECRET_KEY", "DJANGO_DEBUG", "DJANGO_ALLOWED_HOSTS", "DB_ENGINE",
+            "DJANGO_SECRET_KEY", "DJANGO_DEBUG", "DJANGO_ALLOWED_HOSTS", "DJANGO_HTTPS", "DB_ENGINE",
             "DB_NAME", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT",
         )
         for key in keys:
@@ -45,9 +45,10 @@ class SettingsEnvironmentTests(unittest.TestCase):
         self.assertNotEqual(missing_hosts.returncode, 0)
         self.assertIn("DJANGO_ALLOWED_HOSTS", missing_hosts.stderr)
 
-    def test_production_settings_load_with_proxy_configuration(self):
+    def test_production_settings_load_with_https_and_proxy_configuration(self):
         result = self.run_settings_import(
             DJANGO_DEBUG="False",
+            DJANGO_HTTPS="True",
             DJANGO_SECRET_KEY="test-only-secret-long-enough-for-settings-import",
             DJANGO_ALLOWED_HOSTS="sgr.example.cl",
             DB_ENGINE="mysql",
@@ -59,6 +60,20 @@ class SettingsEnvironmentTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("HTTP_X_FORWARDED_PROTO", result.stdout)
         self.assertIn("health/", result.stdout)
+
+    def test_production_settings_without_https_keep_http_working(self):
+        result = self.run_settings_import(
+            DJANGO_DEBUG="False",
+            DJANGO_SECRET_KEY="test-only-secret-long-enough-for-settings-import",
+            DJANGO_ALLOWED_HOSTS="sgr.example.cl",
+            DB_ENGINE="mysql",
+            DB_NAME="sgr_test",
+            DB_USER="sgr_user",
+            DB_PASSWORD="test-only-password",
+            DB_HOST="db.example.test",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("HTTP_X_FORWARDED_PROTO", result.stdout)
 
     def test_production_settings_reject_missing_or_sqlite_database_engine(self):
         for engine in (None, "sqlite"):
