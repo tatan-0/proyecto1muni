@@ -40,3 +40,18 @@ class CambioClaveObligatorioTests(TestCase):
         })
         self.assertEqual(r.status_code, 302)
         self.assertFalse(PerfilUsuario.objects.get(usuario=self.user).debe_cambiar_clave)
+
+
+class AccionClaveTemporalTests(TestCase):
+    def test_admin_asigna_clave_temporal(self):
+        User.objects.create_superuser("adm", "a@example.com", "x12345678")
+        objetivo = User.objects.create_user("obj", password="x12345678")
+        self.client.login(username="adm", password="x12345678")
+        r = self.client.post(reverse("admin:auth_user_changelist"), {
+            "action": "asignar_clave_temporal",
+            "_selected_action": [objetivo.pk],
+        })
+        self.assertEqual(r.status_code, 302)
+        objetivo.refresh_from_db()
+        self.assertFalse(objetivo.check_password("x12345678"))
+        self.assertTrue(PerfilUsuario.objects.get(usuario=objetivo).debe_cambiar_clave)
