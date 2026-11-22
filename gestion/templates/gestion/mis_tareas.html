@@ -27,7 +27,7 @@
                         <span class="ls-prio ls-prio-{{ t.prioridad }}">Prioridad {{ t.get_prioridad_display|lower }}</span>
                     </div>
                     <h3><a href="{% url 'gestion:detalle_tarea' t.pk %}">{{ t.titulo }}</a></h3>
-                    {% if t.lugar %}<p class="ls-meta">Lugar: {{ t.lugar }}</p>{% endif %}
+ {% if t.ubicacion %}<p class="ls-meta">Lugar: {{ t.ubicacion }}</p>{% endif %}
                     <p class="ls-meta">Profesional: {{ t.profesional.get_full_name|default:t.profesional.username }}</p>
                     <div class="ls-task-pie">
                         <span class="ls-meta">Límite {{ t.fecha_limite|date:"d/m/Y" }}</span>

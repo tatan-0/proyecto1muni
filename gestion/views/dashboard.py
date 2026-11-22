@@ -3,17 +3,21 @@ from functools import wraps
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_GET
 
 from gestion.models import Delegacion, Funcionario, Indicador, Servicio
-from gestion.permissions import funcionarios_visibles, usuario_es_admin, usuario_tiene_acceso_sgr
+from gestion.permissions import (
+    funcionarios_visibles, roles_de, usuario_es_admin, usuario_tiene_acceso_sgr,
+)
 
 def sgr_required(view_func):
     @wraps(view_func)
     def wrapped(request, *args, **kwargs):
         if not usuario_tiene_acceso_sgr(request.user):
+            if roles_de(request.user):
+                return redirect("gestion:mis_tareas")
             return HttpResponseForbidden("Tu cuenta no tiene un perfil habilitado para el SGR.")
         return view_func(request, *args, **kwargs)
 

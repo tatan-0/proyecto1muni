@@ -2,7 +2,7 @@
 {% block title %}{{ tarea.titulo }} · SGR La Serena{% endblock %}
 {% block content %}
 <section aria-labelledby="page-title">
-    {% include "gestion/_banner.html" with titulo=tarea.titulo subtitulo=tarea.lugar %}
+    {% include "gestion/_banner.html" with titulo=tarea.titulo subtitulo=tarea.ubicacion %}
 
     <div class="ls-panel ls-estado-{{ tarea.estado }}">
         <div class="flex flex-wrap items-center gap-3">

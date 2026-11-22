@@ -48,6 +48,19 @@ class SGRPermissionTests(TestCase):
 
         self.assertEqual(response.status_code, 403)
 
+    def test_coordinator_without_sgr_access_is_redirected_to_mis_tareas(self):
+        coordinator = get_user_model().objects.create_user("coordinator", password="test-pass-123")
+        coordinator.groups.add(Group.objects.create(name="COORDINADOR"))
+        self.client.force_login(coordinator)
+
+        response = self.client.get(reverse("gestion:dashboard"))
+
+        self.assertRedirects(
+            response,
+            reverse("gestion:mis_tareas"),
+            fetch_redirect_response=False,
+        )
+
     def test_admin_sees_all_staff(self):
         visible = funcionarios_visibles(self.admin)
 

@@ -131,3 +131,8 @@
   .ls-title { font-size: 1.6rem; }
   .ls-banner::before { width: 3.5rem; height: 3.5rem; }
 }
+/* Título del banner: debe ser claro sobre el fondo rojo */
+.ls-banner .ls-title {
+  color: #fff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}

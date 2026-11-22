@@ -31,4 +31,4 @@ class LoginPorRol(LoginView):
 
 
 login_view = LoginPorRol.as_view()
-logout_view = LogoutView.as_view()
+logout_view = LogoutView.as_view() 
