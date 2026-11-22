@@ -201,8 +201,14 @@ class Indicador(models.Model):
 
     def aprobadas(self, desde, hasta, usuario=None):
         """Tareas aprobadas que aportan a este indicador en un rango de fechas."""
+        from datetime import datetime, time, timedelta
+
+        from django.utils import timezone
+
+        inicio = timezone.make_aware(datetime.combine(desde, time.min))
+        fin = timezone.make_aware(datetime.combine(hasta + timedelta(days=1), time.min))
         qs = self.tareas.filter(
-            estado="aprobada", validada_en__date__range=(desde, hasta)
+            estado="aprobada", validada_en__gte=inicio, validada_en__lt=fin
         )
         if usuario is not None:
             qs = qs.filter(profesional=usuario)
