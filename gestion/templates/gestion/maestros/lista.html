@@ -1,6 +1,159 @@
 {% extends "gestion/base.html" %}
 {% block title %}{{ entity_label }} · SGR La Serena{% endblock %}
 {% block content %}
+{% if entity == "delegaciones" %}
+<section class="delegation-page" aria-labelledby="page-title">
+    <header class="delegation-page__header">
+        <div class="delegation-page__lead">
+            <h1 id="page-title" class="text-3xl font-bold tracking-tight sm:text-4xl">{{ entity_label }}</h1>
+            <p class="mt-3 text-base-content/75">{{ description }}</p>
+            <p class="mt-2 text-sm leading-relaxed text-base-content/70">Revisa qué sector cubre cada delegación, quiénes forman su equipo y qué responsabilidades corresponden a cada cargo.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            {% if show_inactive %}
+                <a class="btn btn-ghost" href="{{ active_url }}">Ver solo activas</a>
+            {% else %}
+                <a class="btn btn-ghost" href="{{ inactive_url }}">Ver activas e inactivas</a>
+            {% endif %}
+            <a class="btn btn-primary" href="{{ create_url }}">Crear delegación</a>
+        </div>
+    </header>
+
+    <p class="delegation-page__summary rounded-box">
+        <strong>{{ delegaciones_activas }} delegaciones activas</strong>
+        <span aria-hidden="true"> · </span>{{ funcionarios_activos_total }} registros activos de personal
+        <span aria-hidden="true"> · </span>{{ roles_guia|length }} perfiles con funciones descritas
+    </p>
+
+    <div class="delegation-overview">
+        <section class="municipal-panel delegation-how rounded-box" aria-labelledby="how-title">
+            <h2 id="how-title" class="text-xl font-semibold">Cómo recorrer esta sección</h2>
+            <ul class="steps delegation-steps">
+                <li class="step step-primary delegation-step">Cobertura territorial</li>
+                <li class="step step-primary delegation-step">Equipo asignado</li>
+                <li class="step step-primary delegation-step">Funciones del cargo</li>
+            </ul>
+            <p class="mt-4 max-w-3xl text-sm leading-relaxed text-base-content/75">Abre la ficha de una delegación para ver a sus funcionarios y revisar las funciones de cada cargo. Usa el catálogo de cargos cuando necesites consultar o mantener un descriptor.</p>
+        </section>
+        <aside class="alert alert-info delegation-notice items-start" role="note">
+            <div>
+                <h2 class="font-semibold">Perfiles del Descriptor de Funciones</h2>
+                <p class="mt-1 text-sm leading-relaxed">La guía reúne los cargos y responsabilidades definidos para organizar el trabajo territorial de las delegaciones.</p>
+            </div>
+        </aside>
+    </div>
+
+    <form method="get" class="municipal-panel flex flex-col gap-3 rounded-box p-4 sm:flex-row sm:items-end" role="search">
+        {% if show_inactive %}<input type="hidden" name="estado" value="todos">{% endif %}
+        <div class="form-control min-w-0 flex-1 gap-2">
+            <label for="catalog-search" class="text-sm font-semibold">Buscar una delegación</label>
+            <input id="catalog-search" class="input input-bordered w-full" type="search" name="q" value="{{ search_query }}" placeholder="Nombre o cobertura territorial" autocomplete="off">
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button class="btn btn-neutral" type="submit">Buscar</button>
+            {% if search_query %}<a class="btn btn-ghost" href="{{ clear_search_url }}">Limpiar búsqueda</a>{% endif %}
+        </div>
+    </form>
+
+    <section aria-labelledby="delegaciones-title">
+        <div class="mb-3 flex flex-wrap items-end justify-between gap-3">
+            <div>
+                <h2 id="delegaciones-title" class="text-2xl font-semibold">Delegaciones de la comuna</h2>
+                <p class="mt-1 text-sm text-base-content/70">Cada ficha reúne la cobertura, el equipo asociado y el estado del registro.</p>
+            </div>
+            <p class="text-sm font-semibold text-base-content/70" role="status" aria-live="polite">
+                {{ result_count }} {% if result_count == 1 %}delegación encontrada{% else %}delegaciones encontradas{% endif %}{% if search_query %} para “{{ search_query }}”{% endif %}.
+            </p>
+        </div>
+        <div class="municipal-panel overflow-x-auto rounded-box">
+            <table class="municipal-table table table-zebra">
+                <caption class="sr-only">Delegaciones, cobertura territorial y equipos activos</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Delegación</th>
+                        <th scope="col">Cobertura y equipo</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col"><span class="sr-only">Acciones</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                        <tr>
+                            <th scope="row" class="font-semibold">{{ object }}</th>
+                            <td class="min-w-64">
+                                {% if object.descripcion_visible %}
+                                    <p>{{ object.descripcion_visible }}</p>
+                                {% else %}
+                                    <p class="text-base-content/65">Cobertura territorial pendiente de descripción.</p>
+                                {% endif %}
+                                <p class="mt-2 text-sm font-semibold">{{ object.funcionarios_activos }} registro{{ object.funcionarios_activos|pluralize }} de personal activo{{ object.funcionarios_activos|pluralize }}</p>
+                                <div class="mt-2 flex flex-wrap gap-1.5">
+                                    {% for miembro in object.equipo_activo %}
+                                        <span class="badge badge-outline">{{ miembro.cargo.nombre }}</span>
+                                    {% empty %}
+                                        <span class="text-sm text-base-content/65">Sin funcionarios activos asignados.</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>
+                                {% if object.activo %}<span class="badge badge-success badge-soft">Activa</span>
+                                {% else %}<span class="badge badge-ghost">Inactiva</span>{% endif %}
+                            </td>
+                            <td>
+                                <div class="flex min-w-40 flex-wrap justify-end gap-2">
+                                    <a class="btn btn-outline btn-sm" href="{% url 'maestros:delegaciones-detalle' object.pk %}">Abrir ficha</a>
+                                    <a class="btn btn-ghost btn-sm" href="{% url 'maestros:delegaciones-editar' object.pk %}">Editar</a>
+                                    {% if object.activo %}<a class="btn btn-outline btn-error btn-sm" href="{% url 'maestros:delegaciones-desactivar' object.pk %}">Desactivar</a>{% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4" class="py-10 text-center text-base-content/70">{% if search_query %}No encontramos delegaciones que coincidan. Prueba con otro nombre o cobertura, o limpia la búsqueda.{% else %}No hay delegaciones en esta vista. Puedes crear una con el botón “Crear delegación”.{% endif %}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section aria-labelledby="roles-title">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+            <div class="delegation-page__lead">
+                <h2 id="roles-title" class="text-2xl font-semibold">Quién hace qué en una delegación</h2>
+                <p class="mt-2 text-sm leading-relaxed text-base-content/70">Estos perfiles explican cómo se distribuyen las responsabilidades. Abre un cargo para ver sus tareas; la ficha territorial indica qué funcionarios están asociados a cada delegación.</p>
+            </div>
+            <a class="btn btn-outline btn-sm" href="{% url 'maestros:cargos-lista' %}">Ir al catálogo de cargos</a>
+        </div>
+
+        {% if roles_guia %}
+            <div class="municipal-panel delegation-role-list rounded-box">
+                {% for perfil in roles_guia %}
+                    <details class="collapse collapse-arrow delegation-role">
+                        <summary class="collapse-title delegation-role__summary">
+                            <span class="delegation-role__name">{{ perfil.nombre }}</span>
+                            <span class="delegation-role__description">{{ perfil.resumen }}</span>
+                        </summary>
+                        <div class="collapse-content delegation-role__content">
+                            {% if perfil.area %}<p class="mb-2 text-sm text-base-content/70">Área: {{ perfil.area }}</p>{% endif %}
+                            {% if perfil.tareas %}
+                                <p class="mb-2 text-sm font-semibold">Responsabilidades descritas</p>
+                                <ul class="delegation-task-list">
+                                    {% for tarea in perfil.tareas %}<li>{{ tarea }}</li>{% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-sm text-base-content/70">El descriptor no incluye tareas adicionales.</p>
+                            {% endif %}
+                        </div>
+                    </details>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="status">
+                <span>Aún no hay funciones cargadas en el catálogo de cargos. Puedes revisarlo desde “Ir al catálogo de cargos”.</span>
+            </div>
+        {% endif %}
+    </section>
+</section>
+{% else %}
 <section aria-labelledby="page-title">
     <div class="mb-7 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div class="max-w-2xl">
@@ -34,8 +187,8 @@
         {{ result_count }} {% if result_count == 1 %}registro encontrado{% else %}registros encontrados{% endif %}{% if search_query %} para “{{ search_query }}”{% endif %}.
     </p>
 
-    <div class="municipal-panel overflow-x-auto rounded-box">
-        <table class="municipal-table table table-zebra">
+    <div class="municipal-panel delegation-table-wrap overflow-x-auto rounded-box">
+        <table class="municipal-table delegation-table table table-zebra">
             <caption class="sr-only">Listado de {{ entity_label|lower }}</caption>
             <thead>
                 <tr>
@@ -51,8 +204,10 @@
                         <tr>
                             <th scope="row" class="font-semibold">{{ object }}</th>
                             <td>
-                                {% if object.descripcion_territorial %}{{ object.descripcion_territorial }}
-                                {% elif object.funciones %}{% if object.area %}<span class="font-medium">{{ object.area }}</span><span class="mx-1 text-base-content/40">·</span>{% endif %}{{ object.funciones|truncatechars:180 }}
+                                {% if entity == 'cargos' %}
+                                    {% if object.area %}<p>{{ object.area }}</p>{% endif %}
+                                    {% if object.funciones %}<details class="mt-1 max-w-xl"><summary class="cursor-pointer font-semibold text-primary">Ver funciones del cargo</summary><p class="mt-2 whitespace-pre-line text-sm text-base-content/75">{{ object.funciones }}</p></details>{% else %}<span class="text-base-content/50">Sin funciones definidas</span>{% endif %}
+                                {% elif object.descripcion_territorial %}{{ object.descripcion_territorial }}
                                 {% elif object.area %}{{ object.area }}
                                 {% elif object.usuario %}{{ object.cargo }} · {{ object.delegacion }}
                                 {% elif object.meta_trimestral %}{{ object.ponderador }}% · meta {{ object.meta_trimestral }} {{ object.unidad_medida }}
@@ -79,4 +234,5 @@
         </table>
     </div>
 </section>
+{% endif %}
 {% endblock %}

@@ -9,7 +9,13 @@ from gestion.forms import (
     ServicioForm,
 )
 from gestion.models import Cargo, Delegacion, Funcionario, Indicador, OrganizacionComunitaria, Servicio
-from gestion.views.maestros import MaestroCreateView, MaestroDesactivarView, MaestroListView, MaestroUpdateView
+from gestion.views.maestros import (
+    DelegacionDetailView,
+    MaestroCreateView,
+    MaestroDesactivarView,
+    MaestroListView,
+    MaestroUpdateView,
+)
 
 app_name = "maestros"
 
@@ -52,7 +58,13 @@ MAESTROS = {
     },
 }
 
-urlpatterns = []
+urlpatterns = [
+    path(
+        "delegaciones/<int:pk>/",
+        DelegacionDetailView.as_view(),
+        name="delegaciones-detalle",
+    )
+]
 for entity, config in MAESTROS.items():
     shared = {"entity": entity, "entity_label": config["label"]}
     urlpatterns.extend(
