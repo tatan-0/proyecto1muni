@@ -21,6 +21,24 @@
             </tbody>
         </table>
     </div>
+    <h2 class="mt-8 text-2xl font-bold tracking-tight">Avance por funcionario</h2>
+    <p class="mt-2 text-base-content/70">Trimestre {{ trimestre_actual }} de {{ anio_actual }}. Si no hay meta individual, se usa la meta del cargo.</p>
+    <div class="municipal-panel mt-4 overflow-x-auto rounded-box">
+        <table class="municipal-table table table-zebra">
+            <caption class="sr-only">Avance de cada funcionario por indicador</caption>
+            <thead><tr><th scope="col">Funcionario</th><th scope="col">Indicador</th><th scope="col">Meta</th><th scope="col">Avance</th></tr></thead>
+            <tbody>
+                {% for fila in filas_funcionario %}
+                    <tr>
+                        <th scope="row">{{ fila.funcionario.nombre }}</th>
+                        <td>{{ fila.indicador.nombre }}</td>
+                        <td>{{ fila.meta }} {{ fila.indicador.unidad_medida }} {% if fila.propia %}<span class="badge badge-outline">individual</span>{% else %}<span class="badge badge-ghost">del cargo</span>{% endif %}</td>
+                        <td>{{ fila.avance }} / {{ fila.meta }} <span class="badge badge-ghost">{{ fila.porcentaje }}%</span></td>
+                    </tr>
+                {% empty %}<tr><td colspan="4" class="py-8 text-center text-base-content/70">No hay funcionarios con indicadores activos.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
     <p class="mt-4 text-sm text-base-content/65">El porcentaje cuenta solo tareas aprobadas y se limita a 100% de la meta trimestral.</p>
 </section>
 {% endblock %}

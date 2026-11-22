@@ -67,6 +67,7 @@
                             <ul>
                             <li><a href="{% url 'gestion:mis_tareas' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-calendar"/></svg>Mis tareas</a></li>
                             {% if 'coordinador' in sgr_roles or 'admin' in sgr_roles %}<li><a href="{% url 'gestion:panel_cumplimiento' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-target"/></svg>Panel de cumplimiento</a></li>{% endif %}
+                            {% if 'coordinador' in sgr_roles or 'admin' in sgr_roles %}<li><a href="{% url 'gestion:metas_lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-group"/></svg>Metas individuales</a></li>{% endif %}
                             </ul>
                         </details>
                     </li>

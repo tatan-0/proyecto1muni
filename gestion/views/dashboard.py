@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_GET
 
-from gestion.models import Delegacion, Funcionario, Indicador, Servicio
+from gestion.models import Delegacion, Funcionario, Indicador, MetaIndividual, Servicio
 from gestion.periodos import rango_trimestre
 from gestion.permissions import (
     funcionarios_visibles, roles_de, usuario_es_admin, usuario_tiene_acceso_sgr,
@@ -104,17 +104,55 @@ def semaforo(request):
     staff = funcionarios_visibles(request.user).filter(activo=True)
     cargo_ids = staff.values_list("cargo_id", flat=True).distinct()
     indicators = Indicador.objects.filter(cargo_id__in=cargo_ids, activo=True).select_related("cargo")
-    desde, hasta = rango_trimestre(timezone.localdate())
+    hoy = timezone.localdate()
+    desde, hasta = rango_trimestre(hoy)
+    anio, trimestre = hoy.year, (hoy.month - 1) // 3 + 1
+
     rows = []
     for indicator in indicators:
         avance = indicator.aprobadas(desde, hasta)
         meta = indicator.meta_trimestral
         porcentaje = min(100, round(100 * avance / meta)) if meta else 0
         rows.append({"indicador": indicator, "avance": avance, "porcentaje": porcentaje})
+
+    # Avance por funcionario: meta individual del trimestre o, si no hay, la del cargo.
+    personas = list(staff.select_related("cargo", "usuario"))
+    metas = {
+        (m.funcionario_id, m.indicador_id): m.meta
+        for m in MetaIndividual.objects.filter(
+            anio=anio, trimestre=trimestre, funcionario__in=[p.pk for p in personas],
+        )
+    }
+    por_cargo = {}
+    for indicator in indicators:
+        por_cargo.setdefault(indicator.cargo_id, []).append(indicator)
+    filas_funcionario = []
+    for persona in personas:
+        for indicator in por_cargo.get(persona.cargo_id, []):
+            meta_propia = metas.get((persona.pk, indicator.pk))
+            meta = meta_propia or indicator.meta_trimestral
+            avance = indicator.aprobadas(desde, hasta, usuario=persona.usuario)
+            porcentaje = min(100, round(100 * avance / meta)) if meta else 0
+            filas_funcionario.append({
+                "funcionario": persona,
+                "indicador": indicator,
+                "meta": meta,
+                "propia": meta_propia is not None,
+                "avance": avance,
+                "porcentaje": porcentaje,
+            })
+
     return render(
         request,
         "gestion/semaforo.html",
-        {"filas": rows, "trimestre_desde": desde, "trimestre_hasta": hasta},
+        {
+            "filas": rows,
+            "filas_funcionario": filas_funcionario,
+            "anio_actual": anio,
+            "trimestre_actual": trimestre,
+            "trimestre_desde": desde,
+            "trimestre_hasta": hasta,
+        },
     )
 
 

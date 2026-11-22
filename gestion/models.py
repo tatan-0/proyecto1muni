@@ -237,3 +237,59 @@ class PerfilUsuario(models.Model):
 
     def __str__(self):
         return f"{self.usuario} · {self.sector or 'sin sector'}"
+
+
+class MetaIndividual(models.Model):
+    """Meta trimestral de un funcionario para un indicador de su cargo."""
+
+    TRIMESTRES = [
+        (1, "1.er trimestre (ene-mar)"),
+        (2, "2.º trimestre (abr-jun)"),
+        (3, "3.er trimestre (jul-sep)"),
+        (4, "4.º trimestre (oct-dic)"),
+    ]
+
+    funcionario = models.ForeignKey(
+        Funcionario, on_delete=models.CASCADE,
+        related_name="metas_individuales", verbose_name="funcionario",
+    )
+    indicador = models.ForeignKey(
+        Indicador, on_delete=models.PROTECT,
+        related_name="metas_individuales", verbose_name="indicador",
+    )
+    anio = models.PositiveSmallIntegerField(
+        "año", validators=[MinValueValidator(2020), MaxValueValidator(2100)],
+    )
+    trimestre = models.PositiveSmallIntegerField("trimestre", choices=TRIMESTRES)
+    meta = models.PositiveIntegerField("meta", validators=[MinValueValidator(1)])
+
+    class Meta:
+        ordering = ["-anio", "-trimestre", "funcionario__nombre"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["funcionario", "indicador", "anio", "trimestre"],
+                name="uniq_meta_individual_periodo",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(trimestre__gte=1, trimestre__lte=4),
+                name="meta_individual_trimestre_1_4",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(meta__gte=1),
+                name="meta_individual_meta_positiva",
+            ),
+        ]
+        verbose_name = "meta individual"
+        verbose_name_plural = "metas individuales"
+
+    def __str__(self):
+        return f"{self.funcionario} · {self.indicador.nombre} · {self.anio} T{self.trimestre}: {self.meta}"
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        if self.funcionario_id and self.indicador_id:
+            if self.funcionario.cargo_id != self.indicador.cargo_id:
+                raise ValidationError(
+                    {"indicador": "El indicador debe pertenecer al cargo del funcionario."}
+                )

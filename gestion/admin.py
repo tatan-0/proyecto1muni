@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .models import (
-    Cargo, Delegacion, Evidencia, Funcionario, Indicador,
+    Cargo, Delegacion, Evidencia, Funcionario, Indicador, MetaIndividual,
     PerfilUsuario, Servicio, Tarea,
 )
 
@@ -127,3 +127,11 @@ class ServicioAdmin(admin.ModelAdmin):
     list_display = ("nombre", "activo")
     list_filter = ("activo",)
     search_fields = ("nombre", "descripcion")
+
+
+@admin.register(MetaIndividual)
+class MetaIndividualAdmin(admin.ModelAdmin):
+    list_display = ("funcionario", "indicador", "anio", "trimestre", "meta")
+    list_filter = ("anio", "trimestre")
+    search_fields = ("funcionario__nombre", "indicador__nombre")
+    list_select_related = ("funcionario", "indicador")
