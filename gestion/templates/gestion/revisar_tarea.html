@@ -28,12 +28,14 @@
     <form method="post" class="ls-panel ls-form ls-seccion">
         {% csrf_token %}
         <div class="form-control gap-2">
-            <label for="obs" class="text-sm font-semibold">Observaciones (opcional)</label>
+            <label for="obs" class="text-sm font-semibold">Observaciones</label>
             <textarea id="obs" name="observaciones" rows="3" class="textarea w-full"></textarea>
+            <p class="text-sm text-base-content/65">Obligatoria al rechazar o pedir antecedentes.</p>
         </div>
         <div class="ls-form-pie">
             <a class="btn btn-ghost" href="{% url 'gestion:detalle_tarea' tarea.pk %}">Cancelar</a>
             <button class="btn btn-error btn-outline" name="accion" value="rechazar" type="submit">✖ Devolver al profesional</button>
+            <button class="btn btn-outline" name="accion" value="antecedentes" type="submit">Pedir antecedentes</button>
             <button class="btn btn-primary" name="accion" value="aprobar" type="submit">✔ Aprobar</button>
         </div>
     </form>

@@ -80,7 +80,7 @@ class TareaForm(SGRModelForm):
     class Meta:
         model = Tarea
         fields = ("titulo", "descripcion", "sector", "ubicacion", "prioridad",
-                  "fecha_limite", "profesional", "delegado")
+                  "fecha_limite", "profesional", "delegado", "indicador")
         widgets = {
             "fecha_limite": forms.DateInput(attrs={"type": "date"}),
             "descripcion": forms.Textarea(attrs={"rows": 4}),
@@ -108,6 +108,9 @@ class TareaForm(SGRModelForm):
             groups__name="DELEGADO",
             is_active=True,
         ).distinct()
+        self.fields["indicador"].queryset = Indicador.objects.filter(activo=True)
+        self.fields["indicador"].required = False
+        self.fields["indicador"].label = "Indicador al que aporta (opcional)"
 
     def clean(self):
         data = super().clean()

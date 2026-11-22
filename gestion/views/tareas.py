@@ -37,7 +37,9 @@ def mis_tareas(request):
         "roles": roles_de(request.user),
         "tareas": tareas,
         "total": tareas.count(),
-        "pendientes": tareas.filter(estado__in=["pendiente", "en_progreso", "rechazada"]).count(),
+        "pendientes": tareas.filter(
+            estado__in=["pendiente", "en_progreso", "rechazada", "mas_antecedentes"]
+        ).count(),
         "por_revisar": tareas.filter(estado="en_revision").count(),
         "cumplidas": tareas.filter(cumplida=True).count(),
     })
@@ -103,15 +105,31 @@ def revisar_tarea(request, pk):
     solo_roles(request.user, "delegado")
     tarea = get_object_or_404(Tarea, pk=pk, delegado=request.user, estado="en_revision")
     if request.method == "POST":
-        aprobar = request.POST.get("accion") == "aprobar"
-        tarea.cumplida = aprobar
-        tarea.estado = "aprobada" if aprobar else "rechazada"
-        tarea.validada_por = request.user
-        tarea.validada_en = timezone.now()
-        tarea.observaciones_revision = request.POST.get("observaciones", "")
-        tarea.save()
-        messages.success(request, "Tarea aprobada." if aprobar else "Tarea devuelta al profesional.")
-        return redirect("gestion:detalle_tarea", pk=tarea.pk)
+        accion = request.POST.get("accion")
+        observaciones = request.POST.get("observaciones", "").strip()
+        if accion not in ("aprobar", "rechazar", "antecedentes"):
+            messages.error(request, "Acción no válida.")
+        elif accion != "aprobar" and not observaciones:
+            messages.error(request, "Explica al profesional qué debe corregir o qué antecedentes faltan.")
+        else:
+            if accion == "aprobar":
+                tarea.estado = Tarea.Estado.APROBADA
+                tarea.cumplida = True
+                tarea.validada_por = request.user
+                tarea.validada_en = timezone.now()
+                mensaje = "Tarea aprobada."
+            elif accion == "rechazar":
+                tarea.estado = Tarea.Estado.RECHAZADA
+                tarea.cumplida = False
+                mensaje = "Tarea rechazada y devuelta al profesional."
+            else:
+                tarea.estado = Tarea.Estado.MAS_ANTECEDENTES
+                tarea.cumplida = False
+                mensaje = "Se pidieron más antecedentes al profesional."
+            tarea.observaciones_revision = observaciones
+            tarea.save()
+            messages.success(request, mensaje)
+            return redirect("gestion:detalle_tarea", pk=tarea.pk)
     return render(request, "gestion/revisar_tarea.html", {
         "roles": roles_de(request.user),
         "tarea": tarea,
@@ -131,5 +149,7 @@ def panel_cumplimiento(request):
         "porcentaje": porcentaje,
         "cumplidas": tareas.filter(cumplida=True),
         "en_revision": tareas.filter(estado="en_revision"),
-        "pendientes": tareas.filter(cumplida=False).exclude(estado="en_revision"),
+        "pendientes": tareas.filter(
+            estado__in=["pendiente", "en_progreso", "rechazada", "mas_antecedentes"]
+        ),
     })

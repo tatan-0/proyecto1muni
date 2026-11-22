@@ -1,10 +1,10 @@
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Sum
-
 
 class Tarea(models.Model):
     class Estado(models.TextChoices):
@@ -13,6 +13,7 @@ class Tarea(models.Model):
         EN_REVISION = "en_revision", "En revisión"
         APROBADA = "aprobada", "Aprobada"
         RECHAZADA = "rechazada", "Rechazada"
+        MAS_ANTECEDENTES = "mas_antecedentes", "Más antecedentes"
 
     class Prioridad(models.TextChoices):
         ALTA = "alta", "Alta"
@@ -28,7 +29,7 @@ class Tarea(models.Model):
     ubicacion = models.CharField("Calle o dirección", max_length=200, blank=True)
     prioridad = models.CharField(max_length=10, choices=Prioridad.choices, default=Prioridad.MEDIA)
     fecha_limite = models.DateField()
-    estado = models.CharField(max_length=15, choices=Estado.choices, default=Estado.PENDIENTE)
+    estado = models.CharField(max_length=16, choices=Estado.choices, default=Estado.PENDIENTE)
 
     creada_por = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="tareas_creadas"
@@ -40,6 +41,10 @@ class Tarea(models.Model):
     delegado = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="tareas_a_revisar",
         limit_choices_to={"groups__name": "DELEGADO"},
+    )
+    indicador = models.ForeignKey(
+        "Indicador", null=True, blank=True, on_delete=models.PROTECT,
+        related_name="tareas", verbose_name="Indicador al que aporta",
     )
     creada_en = models.DateTimeField(auto_now_add=True)
 
@@ -59,6 +64,21 @@ class Tarea(models.Model):
     class Meta:
         ordering = ["fecha_limite", "-creada_en"]
 
+    def _estado_guardado(self):
+        if not self.pk:
+            return None
+        return Tarea.objects.filter(pk=self.pk).values_list("estado", flat=True).first()
+
+    def save(self, *args, **kwargs):
+        if self._estado_guardado() == self.Estado.APROBADA:
+            raise ValidationError("Una tarea aprobada no se puede modificar.")
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self._estado_guardado() == self.Estado.APROBADA:
+            raise ValidationError("Una tarea aprobada no se puede eliminar.")
+        return super().delete(*args, **kwargs)
+
     def __str__(self):
         return self.titulo
 
@@ -77,6 +97,21 @@ class Evidencia(models.Model):
 
     class Meta:
         ordering = ["-subida_en"]
+
+    def _tarea_aprobada(self):
+        return Tarea.objects.filter(
+            pk=self.tarea_id, estado=Tarea.Estado.APROBADA
+        ).exists()
+
+    def save(self, *args, **kwargs):
+        if self._tarea_aprobada():
+            raise ValidationError("La tarea está aprobada: sus evidencias ya no se pueden modificar.")
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self._tarea_aprobada():
+            raise ValidationError("La tarea está aprobada: sus evidencias ya no se pueden modificar.")
+        return super().delete(*args, **kwargs)
 
 
 class Delegacion(models.Model):
@@ -163,6 +198,15 @@ class Indicador(models.Model):
     def porcentaje_ponderadores(cls, cargo_id):
         total = cls.objects.filter(cargo_id=cargo_id, activo=True).aggregate(total=Sum("ponderador"))["total"]
         return total if total is not None else Decimal("0.00")
+
+    def aprobadas(self, desde, hasta, usuario=None):
+        """Tareas aprobadas que aportan a este indicador en un rango de fechas."""
+        qs = self.tareas.filter(
+            estado="aprobada", validada_en__date__range=(desde, hasta)
+        )
+        if usuario is not None:
+            qs = qs.filter(profesional=usuario)
+        return qs.count()
 
 
 class Servicio(models.Model):

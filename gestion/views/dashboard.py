@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET
 
 from gestion.models import Delegacion, Funcionario, Indicador, Servicio
+from gestion.periodos import rango_trimestre
 from gestion.permissions import (
     funcionarios_visibles, roles_de, usuario_es_admin, usuario_tiene_acceso_sgr,
 )
@@ -103,11 +104,17 @@ def semaforo(request):
     staff = funcionarios_visibles(request.user).filter(activo=True)
     cargo_ids = staff.values_list("cargo_id", flat=True).distinct()
     indicators = Indicador.objects.filter(cargo_id__in=cargo_ids, activo=True).select_related("cargo")
-    rows = [{"indicador": indicator} for indicator in indicators]
+    desde, hasta = rango_trimestre(timezone.localdate())
+    rows = []
+    for indicator in indicators:
+        avance = indicator.aprobadas(desde, hasta)
+        meta = indicator.meta_trimestral
+        porcentaje = min(100, round(100 * avance / meta)) if meta else 0
+        rows.append({"indicador": indicator, "avance": avance, "porcentaje": porcentaje})
     return render(
         request,
         "gestion/semaforo.html",
-        {"filas": rows},
+        {"filas": rows, "trimestre_desde": desde, "trimestre_hasta": hasta},
     )
 
 

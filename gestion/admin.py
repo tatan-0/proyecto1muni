@@ -8,8 +8,30 @@ class TareaAdmin(admin.ModelAdmin):
     list_display = ("titulo", "profesional", "delegado", "estado", "cumplida", "fecha_limite")
     list_filter = ("estado", "cumplida", "prioridad")
 
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.estado == Tarea.Estado.APROBADA:
+            return False
+        return super().has_change_permission(request, obj)
 
-admin.site.register(Evidencia)
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.estado == Tarea.Estado.APROBADA:
+            return False
+        return super().has_delete_permission(request, obj)
+
+
+@admin.register(Evidencia)
+class EvidenciaAdmin(admin.ModelAdmin):
+    list_display = ("tarea", "subida_por", "subida_en")
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.tarea.estado == Tarea.Estado.APROBADA:
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.tarea.estado == Tarea.Estado.APROBADA:
+            return False
+        return super().has_delete_permission(request, obj)
 
 
 @admin.register(Delegacion)
