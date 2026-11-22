@@ -45,10 +45,11 @@
     <div class="mx-auto min-h-[calc(100vh-5rem)] max-w-screen-2xl lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
         {% if request.user.is_authenticated %}
             <nav class="municipal-nav bg-secondary text-secondary-content shadow-inner" aria-label="Navegación principal">
-                <ul class="menu menu-horizontal w-full flex-nowrap gap-1 overflow-x-auto p-2 text-sm lg:menu-vertical lg:sticky lg:top-0 lg:min-h-[calc(100vh-5rem)] lg:flex-nowrap lg:overflow-visible lg:p-4">
+                <ul class="menu menu-horizontal w-full flex-wrap gap-1 overflow-visible p-2 text-sm lg:menu-vertical lg:sticky lg:top-0 lg:min-h-[calc(100vh-5rem)] lg:flex-nowrap lg:overflow-visible lg:p-4">
                     <li class="menu-title hidden px-4 pb-3 text-secondary-content/65 lg:block">Módulos del sistema</li>
                     <li><a href="{% url 'gestion:dashboard' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-overview"/></svg>Resumen de gestión</a></li>
                     <li><a href="{% url 'gestion:ficha' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-person"/></svg>Ficha personal</a></li>
+                    <li><a href="{% url 'gestion:registrar_gestion' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-calendar"/></svg>Registrar gestión</a></li>
                     <li><a href="{% url 'gestion:tubo' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-calendar"/></svg>Agenda de compromisos</a></li>
                     <li><a href="{% url 'gestion:semaforo' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-target"/></svg>Metas e indicadores</a></li>
                     <li><a href="{% url 'gestion:resumen' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-map"/></svg>Resumen territorial</a></li>
@@ -59,6 +60,7 @@
                         <li><a href="{% url 'maestros:funcionarios-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-group"/></svg>Funcionarios</a></li>
                         <li><a href="{% url 'maestros:indicadores-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-target"/></svg>Indicadores</a></li>
                         <li><a href="{% url 'maestros:servicios-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-building"/></svg>Servicios</a></li>
+                        <li><a href="{% url 'maestros:organizaciones-lista' %}"><svg class="size-5" aria-hidden="true"><use href="#icon-group"/></svg>Organizaciones</a></li>
                     {% endif %}
                 </ul>
             </nav>

@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from gestion.models import Cargo, Delegacion, Funcionario, Indicador, Servicio
+from gestion.models import Cargo, Delegacion, Funcionario, Indicador, OrganizacionComunitaria, Servicio
 
 
 class MasterCrudTests(TestCase):
@@ -32,12 +32,18 @@ class MasterCrudTests(TestCase):
             meta_trimestral=8,
             unidad_medida="acciones",
         )
+        self.organizacion = OrganizacionComunitaria.objects.create(
+            nombre="Club Base",
+            tipo=OrganizacionComunitaria.Tipo.ADULTO_MAYOR,
+            delegacion=self.delegacion,
+        )
         self.entities = {
             "delegaciones": (Delegacion, self.delegacion),
             "cargos": (Cargo, self.cargo),
             "funcionarios": (Funcionario, self.funcionario),
             "indicadores": (Indicador, self.indicador),
             "servicios": (Servicio, self.servicio),
+            "organizaciones": (OrganizacionComunitaria, self.organizacion),
         }
 
     def route(self, entity, action, obj=None):
@@ -48,7 +54,12 @@ class MasterCrudTests(TestCase):
         if entity == "delegaciones":
             return {"nombre": f"Delegación {name}", "descripcion_territorial": "Zona ficticia", "activo": "on"}
         if entity == "cargos":
-            return {"nombre": f"Cargo {name}", "area": "Territorial", "activo": "on"}
+            return {
+                "nombre": f"Cargo {name}",
+                "area": "Territorial",
+                "funciones": "Coordina y apoya la gestión del territorio.",
+                "activo": "on",
+            }
         if entity == "funcionarios":
             return {
                 "usuario": self.new_funcionario_user.pk,
@@ -66,14 +77,23 @@ class MasterCrudTests(TestCase):
                 "unidad_medida": "acciones",
                 "activo": "on",
             }
+        if entity == "organizaciones":
+            return {
+                "nombre": f"Organización {name}",
+                "tipo": OrganizacionComunitaria.Tipo.FUNCIONAL,
+                "descripcion": "Organización de prueba",
+                "delegacion": self.delegacion.pk,
+                "activo": "on",
+            }
         return {"nombre": f"Servicio {name}", "descripcion": "Descripción ficticia", "activo": "on"}
 
     def test_admin_can_create_each_master_record(self):
         for entity, (model, _) in self.entities.items():
             with self.subTest(entity=entity):
+                initial_count = model.objects.count()
                 response = self.client.post(self.route(entity, "crear"), self.payload(entity, "Nuevo"))
                 self.assertEqual(response.status_code, 302)
-                self.assertEqual(model.objects.count(), 2)
+                self.assertEqual(model.objects.count(), initial_count + 1)
                 self.assertTrue(model.objects.filter(nombre__contains="Nuevo").exists())
 
     def test_admin_can_list_each_master_record(self):

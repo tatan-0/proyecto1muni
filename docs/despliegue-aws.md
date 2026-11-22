@@ -1,6 +1,6 @@
 # Despliegue — SGR Municipalidad de La Serena
 
-**Estado:** configuración preparada; no hay entorno Elastic Beanstalk, base RDS, certificado ni URL de producción creados. Para acceder a la aplicación mientras tanto, ejecútala localmente con las instrucciones del README.
+**Estado:** configuración preparada; no hay entorno Elastic Beanstalk, base RDS, certificado ni URL de producción creados. Tampoco están configurados un servicio de correo ni un procedimiento verificado de respaldo y recuperación. Para acceder a la aplicación mientras tanto, ejecútala localmente con las instrucciones del README.
 
 ## Arquitectura de destino
 
@@ -100,7 +100,7 @@ La clave del ejemplo es solo de prueba y no debe copiarse a AWS. `python manage.
 - [ ] RDS accesible desde la app y sin endpoint público abierto.
 - [ ] Salida de `python manage.py migrate` y comprobación funcional posterior.
 - [ ] Login y vistas según administrador, delegado y funcionario.
-- [ ] CRUD de las cinco tablas maestras y validación de errores.
+- [ ] CRUD de los seis catálogos implementados y validación de errores.
 - [ ] Suite de pruebas y plan ejecutado en `docs/plan-pruebas-unitarias.md`.
 - [ ] Captura del panel de configuración sin mostrar claves, contraseñas o datos personales.
 

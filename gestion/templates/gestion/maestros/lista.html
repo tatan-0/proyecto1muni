@@ -52,9 +52,11 @@
                             <th scope="row" class="font-semibold">{{ object }}</th>
                             <td>
                                 {% if object.descripcion_territorial %}{{ object.descripcion_territorial }}
+                                {% elif object.funciones %}{% if object.area %}<span class="font-medium">{{ object.area }}</span><span class="mx-1 text-base-content/40">·</span>{% endif %}{{ object.funciones|truncatechars:180 }}
                                 {% elif object.area %}{{ object.area }}
                                 {% elif object.usuario %}{{ object.cargo }} · {{ object.delegacion }}
                                 {% elif object.meta_trimestral %}{{ object.ponderador }}% · meta {{ object.meta_trimestral }} {{ object.unidad_medida }}
+                                {% elif object.tipo %}{{ object.get_tipo_display }}{% if object.delegacion %} · {{ object.delegacion }}{% endif %}
                                 {% elif object.descripcion %}{{ object.descripcion }}
                                 {% else %}<span class="text-base-content/50">Sin detalle</span>{% endif %}
                             </td>

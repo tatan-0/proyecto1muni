@@ -28,6 +28,7 @@ class MaestroListView(AdminRequiredMixin, ListView):
         "funcionarios": ("nombre", "usuario__username", "cargo__nombre", "delegacion__nombre"),
         "indicadores": ("nombre", "cargo__nombre", "unidad_medida"),
         "servicios": ("nombre", "descripcion"),
+        "organizaciones": ("nombre", "tipo", "descripcion", "delegacion__nombre"),
     }
 
     def get_queryset(self):

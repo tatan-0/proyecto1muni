@@ -21,6 +21,7 @@ function Invoke-SgrPython {
 
 Invoke-SgrPython -PythonArguments @("-m", "pip", "install", "-r", "requirements.txt")
 Invoke-SgrPython -PythonArguments @("manage.py", "migrate")
+Invoke-SgrPython -PythonArguments @("manage.py", "collectstatic", "--noinput")
 Invoke-SgrPython -PythonArguments @("manage.py", "load_demo_data")
 
 $hasAdmin = & $pythonPath manage.py shell -c "from django.contrib.auth import get_user_model; print(get_user_model().objects.filter(is_superuser=True).exists())"

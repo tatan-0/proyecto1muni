@@ -1,0 +1,79 @@
+{% extends "gestion/base.html" %}
+{% block title %}Registrar gestión · SGR La Serena{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-4xl space-y-6" aria-labelledby="page-title">
+    <header class="flex flex-col gap-4 border-b border-base-300 pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <p class="text-xs font-bold uppercase tracking-[0.16em] text-secondary">Registro diario</p>
+            <h1 id="page-title" class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Registrar gestión</h1>
+            <p class="mt-2 text-base-content/70">Documenta la acción realizada y sus datos de respaldo.</p>
+        </div>
+        <div class="flex items-center gap-3 rounded-box border border-base-300 bg-base-100 px-4 py-3 shadow-sm">
+            <span class="grid size-10 place-items-center rounded-full bg-primary/10 text-primary">
+                <svg class="size-5" aria-hidden="true"><use href="#icon-person"/></svg>
+            </span>
+            <span><span class="block text-xs font-semibold uppercase tracking-wide text-base-content/60">Responsable</span><span class="mt-0.5 block font-semibold">{{ funcionario.nombre }}</span><span class="block text-xs text-base-content/60">{{ funcionario.delegacion.nombre }}</span></span>
+        </div>
+    </header>
+
+    <form method="post" class="overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-sm">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="p-5 pb-0 sm:px-7" role="alert">
+                <div class="alert alert-error">
+                    <div>{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="border-b border-base-300 px-5 py-5 sm:px-7">
+            <h2 class="text-lg font-bold">Detalles de la gestión</h2>
+            <p class="mt-1 text-sm text-base-content/65">Clasifica el registro y selecciona su indicador.</p>
+            <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                {% for field in form %}
+                    {% if field.name == "tipo" or field.name == "accion" or field.name == "fecha" or field.name == "indicador" or field.name == "organizacion" or field.name == "titulo" or field.name == "descripcion" %}
+                        <div class="form-control gap-2 {% if field.name == 'titulo' or field.name == 'descripcion' %}sm:col-span-2{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="text-sm font-semibold text-base-content/80">{{ field.label }}{% if field.field.required %}<span aria-hidden="true">*</span><span class="sr-only"> (obligatorio)</span>{% endif %}</label>
+                            {{ field }}
+                            {% if field.help_text %}<p class="text-xs leading-relaxed text-base-content/60">{{ field.help_text }}</p>{% endif %}
+                            {% if field.errors %}<div class="space-y-1 text-sm text-error" role="alert">{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="px-5 py-5 sm:px-7">
+            <div class="mb-4">
+                <h2 class="text-lg font-bold">Datos del usuario</h2>
+                <p class="mt-1 text-sm text-base-content/65">El nombre y teléfono son necesarios para que la gestión aporte avance.</p>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+                {% for field in form %}
+                    {% if field.name == "usuario_nombre" or field.name == "usuario_telefono" %}
+                        <div class="form-control gap-2">
+                            <label for="{{ field.id_for_label }}" class="text-sm font-semibold text-base-content/80">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}<p class="text-xs leading-relaxed text-base-content/60">{{ field.help_text }}</p>{% endif %}
+                            {% if field.errors %}<div class="space-y-1 text-sm text-error" role="alert">{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <label class="mt-5 flex cursor-pointer items-start gap-3 rounded-box border border-warning/25 bg-warning/5 p-4" for="{{ form.usuario_es_delegado.id_for_label }}">
+                {{ form.usuario_es_delegado }}
+                <span><span class="block font-semibold">{{ form.usuario_es_delegado.label }}</span><span class="mt-1 block text-sm leading-relaxed text-base-content/65">El registro se guardará como otra gestión y no sumará al indicador.</span></span>
+            </label>
+            {% if form.usuario_es_delegado.errors %}<div class="mt-2 text-sm text-error" role="alert">{% for error in form.usuario_es_delegado.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+        </div>
+
+        <footer class="flex flex-col-reverse gap-3 border-t border-base-300 bg-base-200/50 px-5 py-4 sm:flex-row sm:justify-end sm:px-7">
+            <a class="btn btn-ghost" href="{% url 'gestion:ficha' %}">Cancelar</a>
+            <button class="btn btn-primary" type="submit">
+                <svg class="size-4" aria-hidden="true"><use href="#icon-calendar"/></svg>
+                Guardar gestión
+            </button>
+        </footer>
+    </form>
+</section>
+{% endblock %}

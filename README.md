@@ -1,6 +1,6 @@
 # Sistema de Gestión de Resultados (SGR) — Municipalidad de La Serena
 
-Aplicación académica para visualizar el seguimiento territorial y gestionar los catálogos maestros del SGR. Los datos generados para la demostración son ficticios. En esta etapa, actividades y compromisos se muestran sin persistir transacciones.
+Aplicación académica para seguimiento territorial y administración de catálogos del SGR. Los datos de demostración son ficticios. La aplicación persiste catálogos, gestiones y ausencias; la agenda de compromisos todavía no tiene registros transaccionales y el puntaje del semáforo es referencial hasta validar la matriz institucional.
 
 ## Inicio rápido en Windows
 
@@ -26,6 +26,7 @@ py -3 -m venv .venv
 npm ci
 npm run build:css
 .\.venv\Scripts\python.exe manage.py migrate
+.\.venv\Scripts\python.exe manage.py collectstatic --noinput
 .\.venv\Scripts\python.exe manage.py load_demo_data
 .\.venv\Scripts\python.exe manage.py createsuperuser
 .\.venv\Scripts\python.exe manage.py runserver
@@ -40,6 +41,7 @@ Para usar MySQL, definir `DB_ENGINE=mysql`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`,
 ## Pruebas
 
 ```powershell
+python manage.py collectstatic --noinput
 python manage.py test -v 2
 python manage.py check
 ```

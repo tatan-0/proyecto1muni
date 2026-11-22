@@ -28,6 +28,16 @@
             <div><p class="text-sm text-base-content/65">Delegación</p><p class="mt-1 font-semibold">{{ funcionario.delegacion.nombre }}</p></div>
         </div>
 
+        {% if funcionario.cargo.funciones %}
+            <section class="mt-6 rounded-box border border-base-300 bg-base-100 p-5 sm:p-6" aria-labelledby="responsibilities-heading">
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h2 id="responsibilities-heading" class="text-lg font-bold">Funciones principales del cargo</h2>
+                    <span class="badge badge-outline">Descriptor 2026</span>
+                </div>
+                <p class="whitespace-pre-line text-sm leading-7 text-base-content/75">{{ funcionario.cargo.funciones }}</p>
+            </section>
+        {% endif %}
+
         <section class="mt-9" aria-labelledby="indicators-heading">
             <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <div><h2 id="indicators-heading" class="text-xl font-semibold">Indicadores y metas trimestrales</h2><p class="mt-1 text-sm text-base-content/65">Ponderador activo del cargo: {{ ponderador_total }}%.</p></div>
@@ -47,12 +57,25 @@
         </section>
 
         <section class="mt-9" aria-labelledby="activities-heading">
-            <div class="mb-4"><h2 id="activities-heading" class="text-xl font-semibold">Registro de actividades</h2><p class="mt-1 text-sm text-base-content/65">Las actividades registradas se mostrarán aquí.</p></div>
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+                <div><h2 id="activities-heading" class="text-xl font-semibold">Registro de actividades</h2><p class="mt-1 text-sm text-base-content/65">Las acciones registradas y su estado de contabilización.</p></div>
+                {% if funcionario.usuario_id == request.user.pk %}<a class="btn btn-primary btn-sm" href="{% url 'gestion:registrar_gestion' %}">Registrar gestión</a>{% endif %}
+            </div>
             <div class="municipal-panel overflow-x-auto rounded-box">
                 <table class="municipal-table table table-zebra">
                     <caption class="sr-only">Actividades registradas para {{ funcionario.nombre }}</caption>
-                    <thead><tr><th scope="col">Actividad</th><th scope="col">Fecha</th><th scope="col">Responsable</th><th scope="col">Estado</th></tr></thead>
-                    <tbody>{% for actividad in actividades %}<tr><th scope="row">{{ actividad.titulo }}</th><td>{{ actividad.fecha|date:"d M Y" }}</td><td>{{ actividad.responsable }}</td><td>{{ actividad.estado }}</td></tr>{% empty %}<tr><td colspan="4" class="py-8 text-center text-base-content/70">Aún no hay actividades registradas.</td></tr>{% endfor %}</tbody>
+                    <thead><tr><th scope="col">Acción</th><th scope="col">Fecha</th><th scope="col">Tipo</th><th scope="col">Indicador</th><th scope="col">Contabilización</th></tr></thead>
+                    <tbody>
+                        {% for actividad in actividades %}
+                            <tr>
+                                <th scope="row">{{ actividad.titulo }}</th>
+                                <td>{{ actividad.fecha|date:"d M Y" }}</td>
+                                <td>{{ actividad.get_tipo_display }} · {{ actividad.get_accion_display }}</td>
+                                <td>{{ actividad.indicador.nombre|default:"—" }}</td>
+                                <td>{% if actividad.contabilizable %}<span class="badge badge-success badge-soft">Aporta avance</span>{% else %}<span class="badge badge-ghost">No contabilizable</span>{% endif %}</td>
+                            </tr>
+                        {% empty %}<tr><td colspan="5" class="py-8 text-center text-base-content/70">Aún no hay actividades registradas.</td></tr>{% endfor %}
+                    </tbody>
                 </table>
             </div>
         </section>
