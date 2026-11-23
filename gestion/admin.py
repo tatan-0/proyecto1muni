@@ -5,8 +5,18 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .models import (
-    Cargo, Delegacion, Evidencia, Funcionario, Indicador, MetaIndividual,
-    PerfilUsuario, Servicio, Tarea,
+    Ausencia,
+    Cargo,
+    Delegacion,
+    Evidencia,
+    Funcionario,
+    Gestion,
+    Indicador,
+    MetaIndividual,
+    OrganizacionComunitaria,
+    PerfilUsuario,
+    Servicio,
+    Tarea,
 )
 
 User = get_user_model()
@@ -103,7 +113,7 @@ class DelegacionAdmin(admin.ModelAdmin):
 class CargoAdmin(admin.ModelAdmin):
     list_display = ("nombre", "area", "activo")
     list_filter = ("activo", "area")
-    search_fields = ("nombre", "area")
+    search_fields = ("nombre", "area", "funciones")
 
 
 @admin.register(Funcionario)
@@ -135,3 +145,28 @@ class MetaIndividualAdmin(admin.ModelAdmin):
     list_filter = ("anio", "trimestre")
     search_fields = ("funcionario__nombre", "indicador__nombre")
     list_select_related = ("funcionario", "indicador")
+
+
+@admin.register(OrganizacionComunitaria)
+class OrganizacionComunitariaAdmin(admin.ModelAdmin):
+    list_display = ("nombre", "tipo", "delegacion", "socios_activos", "numero_registro_pj", "activo")
+    list_filter = ("tipo", "delegacion", "activo")
+    search_fields = ("nombre", "descripcion", "domicilio_legal", "numero_registro_pj")
+    list_select_related = ("delegacion",)
+
+
+@admin.register(Gestion)
+class GestionAdmin(admin.ModelAdmin):
+    list_display = ("titulo", "tipo", "fecha", "funcionario", "indicador", "usuario_es_delegado")
+    list_filter = ("tipo", "accion", "fecha", "funcionario__delegacion")
+    search_fields = ("titulo", "usuario_nombre", "usuario_telefono", "funcionario__nombre")
+    list_select_related = ("funcionario", "indicador", "organizacion", "creado_por")
+    readonly_fields = ("creado_por", "creado_en")
+
+
+@admin.register(Ausencia)
+class AusenciaAdmin(admin.ModelAdmin):
+    list_display = ("funcionario", "tipo", "fecha_desde", "fecha_hasta", "ingresado_por")
+    list_filter = ("tipo", "fecha_desde", "funcionario__delegacion")
+    list_select_related = ("funcionario", "ingresado_por")
+    readonly_fields = ("ingresado_por", "creado_en")

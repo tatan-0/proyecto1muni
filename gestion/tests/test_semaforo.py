@@ -54,7 +54,9 @@ class SemaforoTests(TestCase):
         context = render.call_args.args[2]
         self.assertEqual(context["trimestre_desde"], rango_trimestre(timezone.localdate())[0])
         self.assertEqual(context["trimestre_hasta"], rango_trimestre(timezone.localdate())[1])
-        self.assertEqual(
-            context["filas"],
-            [{"indicador": indicador, "avance": 1, "porcentaje": 100}],
-        )
+        fila = context["filas_funcionario"][0]
+        self.assertEqual(fila["indicador"], indicador)
+        self.assertEqual(fila["avance"], 1)
+        self.assertEqual(fila["porcentaje"], 100)
+        self.assertEqual(fila["meta"], 1)
+        self.assertFalse(fila["propia"])

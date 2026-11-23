@@ -23,9 +23,12 @@ El Sistema de Gestión de Resultados (SGR) reúne la consulta del seguimiento te
 ## Capabilities and Constraints
 
 - Django sirve la aplicación web y persiste los catálogos maestros en una base de datos. El desarrollo local usa SQLite; el proyecto documenta MySQL para despliegue.
-- Los catálogos incluyen delegaciones, cargos, funcionarios, indicadores/funciones y servicios.
+- Los catálogos incluyen delegaciones, cargos con funciones y responsabilidades, funcionarios, indicadores/funciones y servicios.
+- Los siete perfiles descritos en el Descriptor de Funciones 2026 se cargan como cargos de referencia y sus responsabilidades aparecen en la ficha del funcionario.
+- El descriptor define responsabilidades, pero no metas trimestrales, ponderaciones ni una matriz de puntaje; esos indicadores requieren configuración institucional.
 - Los registros de demostración son ficticios.
-- En el alcance actual, actividades y compromisos se muestran sin persistir transacciones; la interfaz debe comunicar esa limitación con precisión.
+- Las gestiones y ausencias se guardan en la base de datos. La fórmula de puntaje del semáforo sigue siendo referencial hasta validar la matriz institucional; la agenda de compromisos todavía no tiene registros transaccionales.
+- Una gestión solo aporta avance si su indicador pertenece al cargo actual del funcionario; los registros históricos incompatibles se muestran como no contabilizables.
 - No se confirmó un diferenciador de mercado ni se deben inventar afirmaciones de impacto o resultados institucionales.
 
 ## Brand Commitments

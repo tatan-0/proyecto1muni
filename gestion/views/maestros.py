@@ -1,13 +1,21 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models import Q
+from django.db.models import Count, Prefetch, Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
+from gestion.models import Cargo, Delegacion, Funcionario
 from gestion.permissions import usuario_es_admin
+
+
+def _separar_funciones(texto):
+    lineas = [linea.strip() for linea in (texto or "").splitlines() if linea.strip()]
+    resumen = lineas[0] if lineas else ""
+    tareas = [linea.lstrip("•- ").strip() for linea in lineas[1:] if linea.strip("•- ")]
+    return resumen, tareas
 
 
 class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -28,10 +36,30 @@ class MaestroListView(AdminRequiredMixin, ListView):
         "funcionarios": ("nombre", "usuario__username", "cargo__nombre", "delegacion__nombre"),
         "indicadores": ("nombre", "cargo__nombre", "unidad_medida"),
         "servicios": ("nombre", "descripcion"),
+        "organizaciones": (
+            "nombre",
+            "tipo",
+            "descripcion",
+            "delegacion__nombre",
+            "domicilio_legal",
+            "numero_registro_pj",
+        ),
     }
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        if self.entity == "delegaciones":
+            queryset = queryset.annotate(
+                funcionarios_activos=Count("funcionarios", filter=Q(funcionarios__activo=True), distinct=True)
+            ).prefetch_related(
+                Prefetch(
+                    "funcionarios",
+                    queryset=Funcionario.objects.filter(activo=True)
+                    .select_related("cargo")
+                    .order_by("nombre"),
+                    to_attr="equipo_activo",
+                )
+            )
         self.show_inactive = self.request.GET.get("estado") == "todos"
         if not self.show_inactive:
             queryset = queryset.filter(activo=True)
@@ -71,6 +99,76 @@ class MaestroListView(AdminRequiredMixin, ListView):
                 "search_query": self.search_query,
                 "result_count": len(context["object_list"]),
             }
+        )
+        if self.entity == "delegaciones":
+            for delegacion in context["object_list"]:
+                descripcion = (delegacion.descripcion_territorial or "").strip()
+                marcas_de_plantilla = ("ficticio", "demostración", "ejemplo")
+                delegacion.descripcion_visible = (
+                    "" if any(marca in descripcion.casefold() for marca in marcas_de_plantilla) else descripcion
+                )
+            perfiles = []
+            for cargo in Cargo.objects.filter(activo=True).order_by("nombre"):
+                resumen, tareas = _separar_funciones(cargo.funciones)
+                if resumen:
+                    perfiles.append(
+                        {
+                            "nombre": cargo.nombre,
+                            "area": cargo.area,
+                            "resumen": resumen,
+                            "tareas": tareas,
+                        }
+                    )
+            context.update(
+                {
+                    "delegaciones_activas": Delegacion.objects.filter(activo=True).count(),
+                    "funcionarios_activos_total": Funcionario.objects.filter(
+                        activo=True, delegacion__activo=True
+                    ).count(),
+                    "roles_guia": perfiles,
+                }
+            )
+        return context
+
+
+class DelegacionDetailView(AdminRequiredMixin, DetailView):
+    model = Delegacion
+    template_name = "gestion/maestros/delegacion_detail.html"
+    context_object_name = "delegacion"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        funcionarios = list(
+            self.object.funcionarios.select_related("cargo", "usuario").order_by("nombre")
+        )
+        for funcionario in funcionarios:
+            resumen, tareas = _separar_funciones(funcionario.cargo.funciones)
+            funcionario.funciones_resumen = resumen
+            funcionario.funciones_clave = tareas
+            es_cuenta_inicial = (
+                (
+                    funcionario.usuario
+                    and funcionario.usuario.get_username().startswith("demo_funcionario_")
+                )
+                or funcionario.nombre.casefold().startswith("funcionario/a de demostración")
+            )
+            funcionario.nombre_visible = (
+                "Identidad por registrar" if es_cuenta_inicial else funcionario.nombre
+            )
+
+        descripcion = (self.object.descripcion_territorial or "").strip()
+        marcas_de_plantilla = ("ficticio", "demostración", "ejemplo")
+        context["descripcion_territorial_visible"] = (
+            "" if any(marca in descripcion.casefold() for marca in marcas_de_plantilla) else descripcion
+        )
+
+        activos = [funcionario for funcionario in funcionarios if funcionario.activo]
+        context["funcionarios"] = funcionarios
+        context["cantidad_funcionarios"] = len(funcionarios)
+        context["cantidad_funcionarios_activos"] = len(activos)
+        context["cantidad_cargos"] = len({funcionario.cargo_id for funcionario in activos})
+        context["cantidad_perfiles_descritos"] = len(
+            {funcionario.cargo_id for funcionario in activos if funcionario.funciones_resumen}
         )
         return context
 

@@ -1,8 +1,21 @@
 from django.urls import path
 
-from gestion.forms import CargoForm, DelegacionForm, FuncionarioForm, IndicadorForm, ServicioForm
-from gestion.models import Cargo, Delegacion, Funcionario, Indicador, Servicio
-from gestion.views.maestros import MaestroCreateView, MaestroDesactivarView, MaestroListView, MaestroUpdateView
+from gestion.forms import (
+    CargoForm,
+    DelegacionForm,
+    FuncionarioForm,
+    IndicadorForm,
+    OrganizacionComunitariaForm,
+    ServicioForm,
+)
+from gestion.models import Cargo, Delegacion, Funcionario, Indicador, OrganizacionComunitaria, Servicio
+from gestion.views.maestros import (
+    DelegacionDetailView,
+    MaestroCreateView,
+    MaestroDesactivarView,
+    MaestroListView,
+    MaestroUpdateView,
+)
 
 app_name = "maestros"
 
@@ -37,9 +50,21 @@ MAESTROS = {
         "label": "Servicios",
         "description": "Administra el catálogo de servicios municipales.",
     },
+    "organizaciones": {
+        "model": OrganizacionComunitaria,
+        "form_class": OrganizacionComunitariaForm,
+        "label": "Organizaciones comunitarias",
+        "description": "Administra organizaciones funcionales, clubes, agrupaciones y comités comunitarios.",
+    },
 }
 
-urlpatterns = []
+urlpatterns = [
+    path(
+        "delegaciones/<int:pk>/",
+        DelegacionDetailView.as_view(),
+        name="delegaciones-detalle",
+    )
+]
 for entity, config in MAESTROS.items():
     shared = {"entity": entity, "entity_label": config["label"]}
     urlpatterns.extend(

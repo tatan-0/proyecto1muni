@@ -4,18 +4,23 @@
 
 1. **Administrar catálogos:** una persona administradora inicia sesión, crea o modifica delegaciones, cargos, funcionarios, indicadores y servicios, y desactiva registros conservando sus relaciones.
 2. **Consultar una delegación:** el delegado revisa el dashboard y las fichas del equipo asignado a su delegación.
-3. **Consultar la ficha propia:** el funcionario ve su ficha y las pantallas de ejemplo; cambiar el ID de una URL no amplía su alcance.
-4. **Revisar indicadores y compromisos:** los perfiles autorizados consultan semáforo, agenda y resumen. Sus valores están marcados como demostración y no admiten escritura transaccional.
+3. **Consultar la ficha propia:** el funcionario ve su ficha, las responsabilidades de su cargo, los indicadores asociados y las gestiones registradas; cambiar el ID de una URL no amplía su alcance.
+4. **Revisar indicadores y compromisos:** los perfiles autorizados consultan semáforo, agenda y resumen. Las gestiones y ausencias se persisten; el puntaje mostrado es referencial hasta validar la matriz institucional y la agenda aún no tiene registros transaccionales.
 
 ## Vista lógica
 
-La app `gestion` contiene cinco modelos maestros persistentes. `Funcionario` enlaza un usuario Django con un cargo y una delegación; `Indicador` pertenece a un cargo; `Servicio` mantiene su descripción y estado. `Cargo`, `Delegacion` e `Indicador` son protegidos frente a borrado físico cuando hay referencias. La baja se expresa mediante `activo=False`.
+La app `gestion` mantiene catálogos de delegaciones, cargos, funcionarios, indicadores y servicios, además de gestiones, organizaciones comunitarias y ausencias. `Funcionario` enlaza un usuario Django con un cargo y una delegación; `Indicador` pertenece a un cargo. Los cargos guardan funciones y responsabilidades, y una migración carga los siete perfiles del Descriptor de Funciones 2026. El descriptor no especifica metas ni ponderaciones; estas deben definirse en los indicadores institucionales. Los registros relacionados son protegidos frente a borrado físico y la baja de catálogos se expresa mediante `activo=False`.
 
 ```mermaid
 erDiagram
     DELEGACION ||--o{ FUNCIONARIO : asigna
+    DELEGACION ||--o{ ORGANIZACION_COMUNITARIA : referencia
     CARGO ||--o{ FUNCIONARIO : organiza
     CARGO ||--o{ INDICADOR : define
+    FUNCIONARIO ||--o{ GESTION : registra
+    INDICADOR ||--o{ GESTION : contabiliza
+    ORGANIZACION_COMUNITARIA ||--o{ GESTION : vincula
+    FUNCIONARIO ||--o{ AUSENCIA : informa
     DJANGO_USER ||--o| FUNCIONARIO : autentica
     DELEGACION {
         string nombre UK
@@ -25,6 +30,7 @@ erDiagram
     CARGO {
         string nombre UK
         string area
+        text funciones
         boolean activo
     }
     FUNCIONARIO {
@@ -42,6 +48,22 @@ erDiagram
         string nombre UK
         text descripcion
         boolean activo
+    }
+    ORGANIZACION_COMUNITARIA {
+        string nombre
+        string tipo
+        boolean activo
+    }
+    GESTION {
+        date fecha
+        string tipo
+        string accion
+        string titulo
+    }
+    AUSENCIA {
+        date fecha_desde
+        date fecha_hasta
+        string tipo
     }
 ```
 

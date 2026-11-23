@@ -40,12 +40,33 @@ class CatalogNameTests(TestCase):
             },
         )
         self.assertEqual(Delegacion.objects.count(), 6)
-        self.assertEqual(Cargo.objects.count(), 3)
+        self.assertEqual(
+            Cargo.objects.filter(
+                nombre__in=("Coordinación territorial", "Gestión comunitaria", "Atención municipal")
+            ).count(),
+            3,
+        )
         self.assertEqual(Funcionario.objects.count(), 6)
         self.assertEqual(Group.objects.count(), 3)
         self.assertTrue(
             all(not funcionario.usuario.has_usable_password() for funcionario in Funcionario.objects.select_related("usuario"))
         )
+
+    def test_descriptor_roles_are_loaded_with_responsibilities(self):
+        roles = {
+            "Delegado",
+            "Gestor Social",
+            "Apoyo Administrativo",
+            "Organizaciones Comunitarias",
+            "Gestor de Compras y Proyectos",
+            "Gestión y Planificación",
+            "Coordinador de Servicios Comunitarios",
+        }
+
+        loaded_roles = Cargo.objects.filter(nombre__in=roles)
+
+        self.assertEqual(set(loaded_roles.values_list("nombre", flat=True)), roles)
+        self.assertTrue(all(cargo.funciones.strip() for cargo in loaded_roles))
 
 
 class IndicatorValidationTests(TestCase):

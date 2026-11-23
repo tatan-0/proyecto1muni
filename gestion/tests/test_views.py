@@ -86,5 +86,28 @@ class SGRViewTests(TestCase):
 
     def test_operational_views_reject_transaction_posts(self):
         for route_name in self.pages:
+            if route_name == "gestion:semaforo":
+                continue
             with self.subTest(route=route_name):
                 self.assertEqual(self.client.post(reverse(route_name), {"actividad": "No debe guardarse"}).status_code, 405)
+
+        self.assertEqual(
+            self.client.post(reverse("gestion:semaforo"), {"actividad": "No debe guardarse"}).status_code,
+            403,
+        )
+
+    def test_activity_entry_form_is_available_to_employee(self):
+        response = self.client.get(reverse("gestion:registrar_gestion"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Registrar gestión")
+        self.assertContains(response, "Nombre del usuario")
+
+    def test_ficha_displays_functions_for_the_assigned_cargo(self):
+        self.cargo.funciones = "Atiende a la comunidad y coordina servicios municipales."
+        self.cargo.save(update_fields=["funciones"])
+
+        response = self.client.get(reverse("gestion:ficha"))
+
+        self.assertContains(response, "Funciones principales del cargo")
+        self.assertContains(response, "Atiende a la comunidad y coordina servicios municipales.")

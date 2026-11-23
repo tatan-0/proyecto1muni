@@ -1,44 +1,215 @@
 {% extends "gestion/base.html" %}
 {% block title %}Semáforo diario · SGR La Serena{% endblock %}
 {% block content %}
-<section aria-labelledby="page-title">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div><h1 id="page-title" class="text-3xl font-bold tracking-tight sm:text-4xl">Metas e indicadores</h1><p class="mt-3 text-base-content/70">Avance de tareas aprobadas entre {{ trimestre_desde|date:"d/m/Y" }} y {{ trimestre_hasta|date:"d/m/Y" }}.</p></div>
+<section class="space-y-8" aria-labelledby="page-title">
+    <header class="flex flex-col gap-5 border-b border-base-300 pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <p class="text-xs font-bold uppercase tracking-[0.16em] text-secondary">Seguimiento trimestral</p>
+            <h1 id="page-title" class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Metas e indicadores</h1>
+            <p class="mt-3 max-w-3xl text-base-content/70">Consulta el avance del equipo y el efecto de las ausencias sobre las metas.</p>
+        </div>
+        <div class="flex shrink-0 items-center gap-3 rounded-box border border-base-300 bg-base-100 px-4 py-3 shadow-sm">
+            <span class="grid size-10 place-items-center rounded-full bg-primary/10 text-primary">
+                <svg class="size-5" aria-hidden="true"><use href="#icon-calendar"/></svg>
+            </span>
+            <span>
+                <span class="block text-xs font-semibold uppercase tracking-wide text-base-content/60">Período</span>
+                <span class="mt-0.5 block font-semibold">{{ trimestre_desde|date:"d M Y" }} – {{ trimestre_hasta|date:"d M Y" }}</span>
+            </span>
+        </div>
+    </header>
+
+    <div class="grid gap-3 sm:grid-cols-3">
+        <article class="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm sm:p-5">
+            <p class="text-sm font-medium text-base-content/65">Indicadores en seguimiento</p>
+            <p class="mt-2 text-3xl font-bold tabular-nums">{{ cantidad_indicadores }}</p>
+        </article>
+        <article class="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm sm:p-5">
+            <p class="text-sm font-medium text-base-content/65">Acciones válidas registradas</p>
+            <p class="mt-2 text-3xl font-bold tabular-nums">{{ total_acciones_validas }}</p>
+        </article>
+        <article class="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm sm:p-5">
+            <p class="text-sm font-medium text-base-content/65">Funcionarios en seguimiento</p>
+            <p class="mt-2 text-3xl font-bold tabular-nums">{{ cantidad_funcionarios }}</p>
+        </article>
     </div>
-    <div class="municipal-panel mt-5 overflow-x-auto rounded-box">
-        <table class="municipal-table table table-zebra">
-            <caption class="sr-only">Indicadores y metas por cargo</caption>
-            <thead><tr><th scope="col">Indicador</th><th scope="col">Cargo</th><th scope="col">Meta trimestral</th><th scope="col">Ponderador</th><th scope="col">Avance</th></tr></thead>
-            <tbody>
-                {% for fila in filas %}
+
+    <aside class="flex gap-3 rounded-box border border-info/25 bg-info/5 p-4 text-sm">
+        <svg class="mt-0.5 size-5 shrink-0 text-info" aria-hidden="true"><use href="#icon-target"/></svg>
+        <p class="text-base-content/75">Solo cuentan acciones realizadas con nombre y teléfono de usuario. Las coordinaciones, gestiones con un delegado como usuario y “otra gestión” no aportan avance. El tope por indicador es 120%.</p>
+    </aside>
+
+    <section aria-labelledby="indicators-heading">
+        <div class="mb-4">
+            <h2 id="indicators-heading" class="text-xl font-bold">Avance por indicador</h2>
+            <p class="mt-1 text-sm text-base-content/65">Los resultados se agrupan por cargo para el equipo visible.</p>
+        </div>
+
+        <div class="municipal-panel hidden overflow-x-auto rounded-box md:block">
+            <table class="municipal-table table table-zebra w-full">
+                <caption class="sr-only">Avance trimestral de indicadores visibles</caption>
+                <thead>
                     <tr>
-                        <th scope="row">{{ fila.indicador.nombre }}</th><td>{{ fila.indicador.cargo.nombre }}</td>
-                        <td>{{ fila.indicador.meta_trimestral }} {{ fila.indicador.unidad_medida }}</td>
-                        <td>{{ fila.indicador.ponderador }}%</td>
-                        <td>{{ fila.avance }} / {{ fila.indicador.meta_trimestral }} {{ fila.indicador.unidad_medida }} <span class="badge badge-ghost">{{ fila.porcentaje }}%</span></td>
+                        <th scope="col">Indicador</th>
+                        <th scope="col">Cargo</th>
+                        <th scope="col">Meta ajustada</th>
+                        <th scope="col">Acciones válidas</th>
+                        <th scope="col">Avance</th>
+                        <th scope="col">Puntaje referencial</th>
                     </tr>
-                {% empty %}<tr><td colspan="5" class="py-8 text-center text-base-content/70">No hay indicadores activos para los cargos visibles.</td></tr>{% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <h2 class="mt-8 text-2xl font-bold tracking-tight">Avance por funcionario</h2>
-    <p class="mt-2 text-base-content/70">Trimestre {{ trimestre_actual }} de {{ anio_actual }}. Si no hay meta individual, se usa la meta del cargo.</p>
-    <div class="municipal-panel mt-4 overflow-x-auto rounded-box">
-        <table class="municipal-table table table-zebra">
-            <caption class="sr-only">Avance de cada funcionario por indicador</caption>
-            <thead><tr><th scope="col">Funcionario</th><th scope="col">Indicador</th><th scope="col">Meta</th><th scope="col">Avance</th></tr></thead>
-            <tbody>
-                {% for fila in filas_funcionario %}
-                    <tr>
-                        <th scope="row">{{ fila.funcionario.nombre }}</th>
-                        <td>{{ fila.indicador.nombre }}</td>
-                        <td>{{ fila.meta }} {{ fila.indicador.unidad_medida }} {% if fila.propia %}<span class="badge badge-outline">individual</span>{% else %}<span class="badge badge-ghost">del cargo</span>{% endif %}</td>
-                        <td>{{ fila.avance }} / {{ fila.meta }} <span class="badge badge-ghost">{{ fila.porcentaje }}%</span></td>
-                    </tr>
-                {% empty %}<tr><td colspan="4" class="py-8 text-center text-base-content/70">No hay funcionarios con indicadores activos.</td></tr>{% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <p class="mt-4 text-sm text-base-content/65">El porcentaje cuenta solo tareas aprobadas y se limita a 100% de la meta trimestral.</p>
+                </thead>
+                <tbody>
+                    {% for fila in filas %}
+                        <tr>
+                            <th scope="row" class="font-semibold">{{ fila.indicador.nombre }}</th>
+                            <td>{{ fila.indicador.cargo.nombre }}</td>
+                            <td class="tabular-nums">{{ fila.meta_ajustada }} {{ fila.indicador.unidad_medida }}</td>
+                            <td class="tabular-nums">{{ fila.acciones }}</td>
+                            <td class="min-w-52">
+                                <div class="flex items-center gap-3">
+                                    <progress class="progress progress-primary w-full max-w-32" value="{{ fila.avance }}" max="120" aria-label="Avance de {{ fila.indicador.nombre }}"></progress>
+                                    <span class="min-w-12 text-right font-semibold tabular-nums">{{ fila.avance }}%</span>
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap font-semibold tabular-nums">{{ fila.puntaje }} <span class="font-normal text-base-content/55">/ {{ fila.indicador.ponderador }}</span></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="py-10 text-center text-base-content/65">No hay indicadores activos para los funcionarios visibles.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="space-y-3 md:hidden">
+            {% for fila in filas %}
+                <article class="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <h3 class="font-bold leading-snug">{{ fila.indicador.nombre }}</h3>
+                            <p class="mt-1 text-sm text-base-content/65">{{ fila.indicador.cargo.nombre }}</p>
+                        </div>
+                        {% if fila.avance >= 100 %}
+                            <span class="badge badge-success badge-soft shrink-0">Meta cumplida</span>
+                        {% elif fila.avance > 0 %}
+                            <span class="badge badge-warning badge-soft shrink-0">En progreso</span>
+                        {% else %}
+                            <span class="badge badge-ghost shrink-0">Sin avance</span>
+                        {% endif %}
+                    </div>
+                    <div class="mt-4">
+                        <div class="mb-2 flex items-center justify-between text-sm">
+                            <span class="font-medium">Avance del equipo</span>
+                            <span class="font-bold tabular-nums">{{ fila.avance }}%</span>
+                        </div>
+                        <progress class="progress progress-primary w-full" value="{{ fila.avance }}" max="120" aria-label="Avance de {{ fila.indicador.nombre }}"></progress>
+                    </div>
+                    <dl class="mt-4 grid grid-cols-3 gap-2 border-t border-base-300 pt-3 text-sm">
+                        <div><dt class="text-xs text-base-content/60">Meta</dt><dd class="mt-1 font-semibold tabular-nums">{{ fila.meta_ajustada }} {{ fila.indicador.unidad_medida }}</dd></div>
+                        <div><dt class="text-xs text-base-content/60">Acciones</dt><dd class="mt-1 font-semibold tabular-nums">{{ fila.acciones }}</dd></div>
+                        <div><dt class="text-xs text-base-content/60">Puntaje*</dt><dd class="mt-1 font-semibold tabular-nums">{{ fila.puntaje }} / {{ fila.indicador.ponderador }}</dd></div>
+                    </dl>
+                </article>
+            {% empty %}
+                <div class="rounded-box border border-dashed border-base-300 bg-base-100 px-5 py-10 text-center text-base-content/65">No hay indicadores activos para los funcionarios visibles.</div>
+            {% endfor %}
+        </div>
+
+        <details class="mt-4 rounded-box border border-base-300 bg-base-100 px-4 py-3 text-sm">
+            <summary class="cursor-pointer font-semibold">Cómo se calcula este resultado</summary>
+            <p class="mt-2 max-w-4xl leading-relaxed text-base-content/70">El cálculo mostrado es referencial: ponderador × avance/meta, con tope en 120%. Las metas se ajustan proporcionalmente a los días hábiles de ausencia del trimestre. La fórmula definitiva debe validarse con la matriz oficial.</p>
+        </details>
+    </section>
+
+    {% if puede_ingresar_ausencia %}
+        <section class="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]" aria-labelledby="absence-heading">
+            <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm sm:p-6">
+                <div class="mb-5 flex items-start gap-3">
+                    <span class="grid size-11 shrink-0 place-items-center rounded-full bg-warning/15 text-warning">
+                        <svg class="size-5" aria-hidden="true"><use href="#icon-calendar"/></svg>
+                    </span>
+                    <div>
+                        <h2 id="absence-heading" class="text-xl font-bold">Registrar ausencia</h2>
+                        <p class="mt-1 text-sm text-base-content/65">Ajusta la meta trimestral del funcionario según los días hábiles ingresados.</p>
+                    </div>
+                </div>
+                <form method="post" class="grid gap-4 sm:grid-cols-2">
+                    {% csrf_token %}
+                    {% if ausencia_form.non_field_errors %}
+                        <div class="alert alert-error sm:col-span-2" role="alert">{% for error in ausencia_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+                    {% endif %}
+                    {% for field in ausencia_form.visible_fields %}
+                        <div class="form-control gap-2 {% if field.name == 'observacion' %}sm:col-span-2{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="text-sm font-semibold">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}<div role="alert" class="text-sm text-error">{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="sm:col-span-2 flex justify-end border-t border-base-300 pt-4">
+                        <button class="btn btn-primary" type="submit">Guardar ausencia</button>
+                    </div>
+                </form>
+            </div>
+
+            <aside class="rounded-box border border-warning/25 bg-warning/5 p-5 sm:p-6">
+                <h3 class="font-bold">Antes de guardar</h3>
+                <ul class="mt-3 space-y-3 text-sm leading-relaxed text-base-content/75">
+                    <li class="flex gap-2"><span class="font-bold text-warning">01</span><span>Selecciona a un funcionario de tu delegación.</span></li>
+                    <li class="flex gap-2"><span class="font-bold text-warning">02</span><span>Ingresa fechas hábiles y revisa que el período no se cruce con otra ausencia.</span></li>
+                    <li class="flex gap-2"><span class="font-bold text-warning">03</span><span>La meta ajustada se recalcula al guardar el registro.</span></li>
+                </ul>
+            </aside>
+        </section>
+    {% endif %}
+
+    <section aria-labelledby="absence-list-heading">
+        <div class="mb-4">
+            <h2 id="absence-list-heading" class="text-xl font-bold">Ausencias del trimestre</h2>
+            <p class="mt-1 text-sm text-base-content/65">Registros que se consideran para el ajuste de metas.</p>
+        </div>
+        <div class="municipal-panel hidden overflow-x-auto rounded-box md:block">
+            <table class="municipal-table table table-zebra w-full">
+                <caption class="sr-only">Ausencias que ajustan las metas trimestrales</caption>
+                <thead><tr><th scope="col">Funcionario/a</th><th scope="col">Tipo</th><th scope="col">Desde</th><th scope="col">Hasta</th></tr></thead>
+                <tbody>
+                    {% for ausencia in ausencias %}
+                        <tr><th scope="row">{{ ausencia.funcionario.nombre }}</th><td>{{ ausencia.get_tipo_display }}</td><td>{{ ausencia.fecha_desde|date:"d M Y" }}</td><td>{{ ausencia.fecha_hasta|date:"d M Y" }}</td></tr>
+                    {% empty %}<tr><td colspan="4" class="py-8 text-center text-base-content/65">No hay ausencias registradas para este trimestre.</td></tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="space-y-3 md:hidden">
+            {% for ausencia in ausencias %}
+                <article class="flex items-start justify-between gap-4 rounded-box border border-base-300 bg-base-100 p-4 shadow-sm">
+                    <div><h3 class="font-semibold">{{ ausencia.funcionario.nombre }}</h3><p class="mt-1 text-sm text-base-content/65">{{ ausencia.get_tipo_display }}</p></div>
+                    <p class="text-right text-sm tabular-nums">{{ ausencia.fecha_desde|date:"d M Y" }}<span class="block text-base-content/55">hasta {{ ausencia.fecha_hasta|date:"d M Y" }}</span></p>
+                </article>
+            {% empty %}
+                <div class="rounded-box border border-dashed border-base-300 bg-base-100 px-5 py-8 text-center text-sm text-base-content/65">No hay ausencias registradas para este trimestre.</div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section aria-labelledby="funcionarios-heading">
+        <div class="mb-4">
+            <h2 id="funcionarios-heading" class="text-xl font-bold">Avance por funcionario según tareas aprobadas</h2>
+            <p class="mt-1 text-sm text-base-content/65">Trimestre {{ trimestre_actual }} de {{ anio_actual }}. Cuenta solo tareas aprobadas por el delegado. Si no hay meta individual, se usa la meta del cargo.</p>
+        </div>
+        <div class="municipal-panel overflow-x-auto rounded-box">
+            <table class="municipal-table table table-zebra w-full">
+                <caption class="sr-only">Avance de cada funcionario por indicador, con tareas aprobadas</caption>
+                <thead><tr><th scope="col">Funcionario</th><th scope="col">Indicador</th><th scope="col">Meta</th><th scope="col">Avance</th></tr></thead>
+                <tbody>
+                    {% for fila in filas_funcionario %}
+                        <tr>
+                            <th scope="row">{{ fila.funcionario.nombre }}</th>
+                            <td>{{ fila.indicador.nombre }}</td>
+                            <td>{{ fila.meta }} {{ fila.indicador.unidad_medida }} {% if fila.propia %}<span class="badge badge-outline">individual</span>{% else %}<span class="badge badge-ghost">del cargo</span>{% endif %}</td>
+                            <td>{{ fila.avance }} / {{ fila.meta }} <span class="badge badge-ghost">{{ fila.porcentaje }}%</span></td>
+                        </tr>
+                    {% empty %}<tr><td colspan="4" class="py-8 text-center text-base-content/70">No hay funcionarios con indicadores activos.</td></tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
 </section>
 {% endblock %}

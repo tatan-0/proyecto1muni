@@ -2,11 +2,11 @@ from django.urls import path
 
 from gestion.views import (
     crear_tarea, dashboard, detalle_tarea, ficha, health_check, login_view,
-    logout_view, mis_tareas, panel_cumplimiento, resumen, revisar_tarea,
-    semaforo, subir_evidencia, tubo,
+    logout_view, mis_tareas, panel_cumplimiento, registrar_gestion, resumen,
+    revisar_tarea, semaforo, subir_evidencia, tubo,
 )
-from gestion.views.usuarios import usuario_clave, usuario_crear, usuario_editar, usuarios_lista
 from gestion.views.metas import metas_crear, metas_editar, metas_eliminar, metas_lista
+from gestion.views.usuarios import usuario_clave, usuario_crear, usuario_editar, usuarios_lista
 
 app_name = "gestion"
 
@@ -16,6 +16,7 @@ urlpatterns = [
     path("logout/", logout_view, name="logout"),
     path("", dashboard, name="dashboard"),
     path("ficha/", ficha, name="ficha"),
+    path("gestiones/nueva/", registrar_gestion, name="registrar_gestion"),
     path("agenda/", tubo, name="tubo"),
     path("semaforo/", semaforo, name="semaforo"),
     path("resumen/", resumen, name="resumen"),
